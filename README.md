@@ -1,2 +1,4 @@
-ng-annotate
-===========
+ExampleAngularApplication
+=========================
+
+An example Angular application
