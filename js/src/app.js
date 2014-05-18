@@ -12,7 +12,7 @@ app.controller("MainController", function($scope)
 				classes: "ng-annotation-comment",
 				type: "textarea",
 				placeholder: "Comment",
-				defaultValue: "\"\""
+				defaultValue: ""
 			},
 			{
 				name: "points",

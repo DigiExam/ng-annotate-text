@@ -118,7 +118,7 @@ ngAnnotate.directive("ngAnnotate", function($parse, $rootScope, $compile, $timeo
 				for(var i = 0; i < options.fields.length; ++i)
 				{
 					field = options.fields[i]
-					popupScope[field.name] = field.defaultValue
+					popupScope.annotation[field.name] = field.defaultValue
 				}
 
 				$element = $("<span />", {
