@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
 	distTasks = ["coffee", "sass", "uglify", "cssmin"]
 	defaultTasks = ["coffee", "sass"]
-	watchTasks = ["coffee"]
+	watchTasks = ["coffee", "sass"]
 
 	grunt.initConfig
 		pkg: grunt.file.readJSON "package.json"
@@ -30,7 +30,7 @@ module.exports = (grunt) ->
 
 		watch:
 			release:
-				files: ["<%= coffee.release.src %>"]
+				files: ["<%= coffee.release.src %>", "<%= sass.release.src %>"]
 				tasks: watchTasks
 	
 	grunt.loadNpmTasks "grunt-contrib-uglify"

@@ -1,6 +1,11 @@
 ngAnnotate = angular.module "ngAnnotate", []
 
-parseAnnotations = (text, annotations)->
+insertAt = (text, index, string)->
+	return text.substr(0, index) + string + text.substr(index)
+
+parseAnnotations = (text, annotations = [], indexOffset = 0)->
+	if annotations.length is 0
+		return text
 	annotations.sort (a, b)->
 		if a.endIndex < b.endIndex
 			return -1
@@ -9,8 +14,11 @@ parseAnnotations = (text, annotations)->
 		return 0
 
 	for i in [annotations.length - 1..0] by -1
-		a = annotations[i]
-
+		annotation = annotations[i];
+		text = insertAt text, annotation.endIndex + indexOffset, "</span>"
+		if annotation.children? and annotation.children.length
+			text = parseAnnotations text, annotation.children, annotation.startIndex
+		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " " + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
 createAnnotationPopup = (id, fields)->
@@ -39,8 +47,13 @@ createAnnotationPopup = (id, fields)->
 	$el.append [$acceptButton, $closeButton]
 	return $el
 
-removeAnnotation = ($element)->
-	$element.unwrap()
+destroyAnnotationPopup = ($popup, scope)->
+	$popup.find("button").off "click"
+	$popup.fadeOut "slow", ->
+		scope.$destroy()
+		$popup.remove()
+
+showAnnotation = ($element)->
 
 generateId = ->
 	return Math.floor Math.random() * 100000
@@ -61,79 +74,105 @@ surroundSelection = (node)->
 			throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
 		throw ex
 
-ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout)->
+ngAnnotate.factory "Annotation", ->
+	Annotation = (data)->
+
+		angular.extend @,
+			id: 0,
+			startIndex: null
+			endIndex: null
+			data: {}
+			children: []
+
+		if data?
+			angular.extend @, data
+
+	return Annotation
+
+ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout, Annotation)->
 
 	return {
 		restrict: "A"
-		link: ($scope, element, attrs)->
-			options =
-				annotations: "annotations"
-				fields: [
-					{
-						name: "comment"
-						label: "Comment"
-						classes: "ng-annotation-comment"
-						type: "textarea"
-						defaultValue: "\"\""
-					}
-				]
+		scope:
+			text: "="
+			annotations: "="
+			options: "="
+			onAnnotate: "="
+			onAnnotateError: "="
+		compile: (tElement, tAttrs, transclude)->
+			text = tElement.text().trim()
+			return ($scope, element, attrs)->
+				# Annotation parsing
+				$scope.$watch "annotations", ->
+					if !$scope.text.length
+						return
+					t = parseAnnotations $scope.text, $scope.annotations
+					tElement.html t
+				, true
 
-			annotations = []
-			options = angular.extend options, $parse(attrs["ngAnnotate"])($scope)
-			onAnnotate = $parse attrs["ngAnnotateOnAnnotation"]
-			onAnnotateError = $parse attrs["ngAnnotateOnError"]
+				options =
+					fields: [
+						{
+							name: "comment"
+							label: "Comment"
+							classes: "ng-annotation-comment"
+							type: "textarea"
+							defaultValue: "\"\""
+						}
+					]
+				options = angular.extend options, $scope.options
 
-			element.on "mousedown", -> mouseDown = containedToElement = true
-			element.on "mouseleave", -> if mouseDown then containedToElement = false
-			element.on "mouseenter", -> if mouseDown then containedToElement = true
+				mouseDown = false
+				containedToElement = false
 
-			element.on "mouseup", (event)->
-				if !containedToElement
-					return
-				mouseDown = false;
+				element.on "mousedown", -> mouseDown = containedToElement = true
+				element.on "mouseleave", -> if mouseDown then containedToElement = false
+				element.on "mouseenter", -> if mouseDown then containedToElement = true
 
-				event.preventDefault()
+				element.on "mouseup", (event)->
+					if !containedToElement
+						return
+					mouseDown = false
 
-				# Generate a random ID to assign this annotation
-				annotationId = generateId()
+					event.preventDefault()
 
-				# Create and fill the annotationpopups model with data specified by user
-				popupScope = $rootScope.$new()
-				popupScope.annotation = {}
-				for field in options.fields
-					popupScope.annotation[field.name] = field.defaultValue
+					# Generate a random ID to assign this annotation
+					annotationId = generateId()
 
-				$element = $ "<span />",
-					"class": "ng-annotation ng-annotation-" + annotationId
+					# Create and fill the annotationpopups model with data specified by user
+					popupScope = $rootScope.$new()
+					popupScope.annotation = {}
+					for field in options.fields
+						popupScope.annotation[field.name] = field.defaultValue
 
-				try
-					surroundSelection $element.get(0)
-				catch ex
-					$timeout -> onAnnotateError($scope, { $ex: ex })
-					return
+					$element = $ "<span />",
+						"class": "ng-annotation ng-annotation-" + annotationId
 
-				offset = $element.offset()
-				width = $element.innerWidth()
-				height = $element.innerHeight()
+					try
+						surroundSelection $element.get(0)
+					catch ex
+						$scope.onAnnotateError ex
+						return
 
-				$popup = createAnnotationPopup annotationId, options.fields
-				$popup.css
-					left: element.offset().left - 320,
-					top: offset.top - (height / 2) - ($popup.innerHeight() / 2)
+					offset = $element.offset()
+					width = $element.innerWidth()
+					height = $element.innerHeight()
 
-				$compile($popup.get(0)) popupScope, ($el, scope)->
-					$el.appendTo("body");
-					$el.fadeIn("slow");
+					$popup = createAnnotationPopup annotationId, options.fields
+					$popup.css
+						left: element.offset().left - 320,
+						top: offset.top - (height / 2) - ($popup.innerHeight() / 2)
 
-					$el.find(".ng-annotate-accept").on "click", (event)->
-						event.preventDefault()
-						$timeout -> onAnnotate $scope, { $annotation: scope.annotation }
+					$compile($popup.get(0)) popupScope, ($el, scope)->
+						$el.appendTo("body");
+						$el.fadeIn("slow");
 
-					$el.find(".ng-annotate-close").on "click", (event)->
-						event.preventDefault()
-						removeAnnotation $element
-						$el.find("button").off "click"
-						$el.fadeOut "slow", ->
-							scope.$destroy()
-							#$el.remove()
+						$el.find(".ng-annotate-accept").on "click", (event)->
+							event.preventDefault()
+							$scope.onAnnotate scope.annotation
+							destroyAnnotationPopup $el, scope
+
+						$el.find(".ng-annotate-close").on "click", (event)->
+							event.preventDefault()
+							destroyAnnotationPopup $el, scope
 	}
