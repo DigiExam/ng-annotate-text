@@ -1,6 +1,6 @@
 {
   "name": "ng-annotate",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An AngularJS directive to assist with annotation of text",
   "repository": {
     "type": "git",
@@ -14,9 +14,8 @@
   "devDependencies": {
     "grunt": "^0.4.5",
     "latest": "^0.1.2",
-    "grunt-contrib-coffee": "^0.10.1",
-    "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-watch": "0.5.3",
-    "grunt-contrib-uglify": "0.2.7"
+    "grunt-contrib-coffee": "0.10.x",
+    "grunt-contrib-uglify": "0.4.x",
+    "grunt-contrib-watch": "0.6.x"
   }
 }
