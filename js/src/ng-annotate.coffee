@@ -210,7 +210,7 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation
 					for field in options.fields
 						popupScope.annotation.data[field.name] = field.defaultValue
 
-					offset = $annotationElement.offset()
+					offsetTop = $annotationElement.offset().top
 					width = $annotationElement.innerWidth()
 					height = $annotationElement.innerHeight()
 
@@ -220,8 +220,8 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation
 						$el.appendTo("body");
 						popupHeight = $el.innerHeight()
 						$el.css
-							left: offset.left - 320,
-							top: offset.top - (height / 2) - (popupHeight / 2)
+							left: element.offset().left - 320,
+							top: offsetTop + (popupHeight / 2) - (height / 2)
 						$el.fadeIn("slow");
 
 						$el.find(".ng-annotate-accept").on "click", (event)->
