@@ -7,6 +7,8 @@ module.exports = (grunt) ->
 		pkg: grunt.file.readJSON "package.json"
 
 		coffee:
+			options:
+				sourceMap: true
 			release: 
 				src: ["js/src/ng-annotate.coffee"]
 				dest: "dist/<%= pkg.version %>/js/<%= pkg.name %>-<%= pkg.version %>.js"

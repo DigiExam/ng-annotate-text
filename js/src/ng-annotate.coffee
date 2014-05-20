@@ -3,25 +3,28 @@ ngAnnotate = angular.module "ngAnnotate", []
 insertAt = (text, index, string)->
 	return text.substr(0, index) + string + text.substr(index)
 
-parseAnnotations = (text, annotations = [], indexOffset = 0)->
-	if annotations.length is 0
-		return text
-	annotations.sort (a, b)->
+sortAnnotationsByEndIndex = (annotations)->
+	return annotations.sort (a, b)->
 		if a.endIndex < b.endIndex
 			return -1
 		else if a.endIndex > b.endIndex
 			return 1
 		return 0
 
+parseAnnotations = (text, annotations = [], indexOffset = 0)->
+	if annotations.length is 0
+		return text
+	annotations = sortAnnotationsByEndIndex annotations
+
 	for i in [annotations.length - 1..0] by -1
 		annotation = annotations[i];
 		text = insertAt text, annotation.endIndex + indexOffset, "</span>"
-		if annotation.children? and annotation.children.length
-			text = parseAnnotations text, annotation.children, annotation.startIndex
+		if annotation.children.length
+			text = parseAnnotations text, annotation.children, annotation.startIndex + indexOffset
 		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " " + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
-createAnnotationPopup = (id, fields)->
+createAnnotationPopup = (id, fields, showCancel = false)->
 	$el = $ "<div class=\"ng-annotation-popup ng-annotation-popup-" + id + "\" />"
 	for field in fields
 		$label = $ "<label>" + field.label + "</label>"
@@ -30,20 +33,23 @@ createAnnotationPopup = (id, fields)->
 			$field = $ "<textarea />",
 				"class": field.classes
 				name: field.name
-				"ng-model": "annotation." + field.name
+				"ng-model": "annotation.data." + field.name
 
 		else if field.type in ["number", "text", "date", "password"]
 			$field = $ "<input />",
 				type: field.type
 				"class": field.classes
 				name: field.name
-				"ng-model": "annotation." + field.name
+				"ng-model": "annotation.data." + field.name
 		
 		$el.append $label
 		$el.append $field
 
 	$acceptButton = $("<button>Accept</button>").addClass "ng-annotate-accept"
-	$closeButton = $("<button>Close</button>").addClass "ng-annotate-close"
+	if showCancel
+		$closeButton = $("<button>Cancel</button>").addClass "ng-annotate-cancel"
+	else
+		$closeButton = $("<button>Close</button>").addClass "ng-annotate-close"
 	$el.append [$acceptButton, $closeButton]
 	return $el
 
@@ -56,23 +62,16 @@ destroyAnnotationPopup = ($popup, scope)->
 showAnnotation = ($element)->
 
 generateId = ->
-	return Math.floor Math.random() * 100000
+	return new Date().getTime()
 
-getSel = ->
-	sel = window.getSelection()
-	if sel.type isnt "Range"
-		throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
-	return sel
-
-surroundSelection = (node)->
-	sel = getSel()
-	range = sel.getRangeAt 0
-	try
-		range.surroundContents node
-	catch ex
-		if ex.name is "InvalidStateError"
-			throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
-		throw ex
+getAnnotationById = (annotations, aId)->
+	for a in annotations
+		if aId is a.id
+			return a
+		if a.children? and a.children.length > 0
+			an = getAnnotationById a.children, aId
+			if an isnt undefined
+				return an
 
 ngAnnotate.factory "Annotation", ->
 	Annotation = (data)->
@@ -82,6 +81,7 @@ ngAnnotate.factory "Annotation", ->
 			startIndex: null
 			endIndex: null
 			data: {}
+			type: ""
 			children: []
 
 		if data?
@@ -89,7 +89,7 @@ ngAnnotate.factory "Annotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout, Annotation)->
+ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation)->
 
 	return {
 		restrict: "A"
@@ -102,6 +102,63 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout, Anno
 		compile: (tElement, tAttrs, transclude)->
 			text = tElement.text().trim()
 			return ($scope, element, attrs)->
+
+				createAnnotation = (aId)->
+					annotation = new Annotation
+						id: aId
+						type: "lilac"
+					sel = window.getSelection()
+					if sel.type isnt "Range"
+						throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
+					range = sel.getRangeAt 0
+					if range.startContainer.parentElement isnt range.endContainer.parentElement
+						throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
+
+					if range.startContainer.parentElement.nodeName is "SPAN" # Is a child annotation
+						parentId = if (attrId = range.startContainer.parentElement.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+						if parentId is undefined
+							throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+						parentAnnotation = getAnnotationById $scope.annotations, parentId
+
+						# Does this selection has any siblings?
+						if parentAnnotation.children.length
+							# Yup, find the previous sibling
+							prevSiblingSpan = range.startContainer.previousSibling
+							if prevSiblingSpan?
+								prevSiblingId = if (attrId = prevSiblingSpan.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+								if not prevSiblingId?
+									throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+								
+								prevAnnotation = getAnnotationById parentAnnotation.children, prevSiblingId
+								annotation.startIndex = prevAnnotation.endIndex + range.startOffset
+								annotation.endIndex = prevAnnotation.endIndex + range.endOffset
+						else
+							# Nope
+							annotation.startIndex = range.startOffset
+							annotation.endIndex = range.endOffset
+
+						parentAnnotation.children.push annotation
+					else
+						# Does this selection has any siblings?
+						if $scope.annotations.length
+							# Yup, find the previous sibling
+							prevSiblingSpan = range.startContainer.previousSibling
+							if prevSiblingSpan?
+								prevSiblingId = if (attrId = prevSiblingSpan.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+								if not prevSiblingId?
+									throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+								
+								prevAnnotation = getAnnotationById $scope.annotations, prevSiblingId
+								annotation.startIndex = prevAnnotation.endIndex + range.startOffset
+								annotation.endIndex = prevAnnotation.endIndex + range.endOffset
+						else
+							# Nope
+							annotation.startIndex = range.startOffset
+							annotation.endIndex = range.endOffset
+
+						$scope.annotations.push annotation
+					return annotation
+
 				# Annotation parsing
 				$scope.$watch "annotations", ->
 					if !$scope.text.length
@@ -139,32 +196,32 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout, Anno
 					# Generate a random ID to assign this annotation
 					annotationId = generateId()
 
-					# Create and fill the annotationpopups model with data specified by user
-					popupScope = $rootScope.$new()
-					popupScope.annotation = {}
-					for field in options.fields
-						popupScope.annotation[field.name] = field.defaultValue
-
-					$element = $ "<span />",
-						"class": "ng-annotation ng-annotation-" + annotationId
-
 					try
-						surroundSelection $element.get(0)
+						annotation = createAnnotation annotationId
+						$scope.$apply()
+						$annotationElement = element.find(".ng-annotation-" + annotationId)
 					catch ex
 						$scope.onAnnotateError ex
 						return
 
-					offset = $element.offset()
-					width = $element.innerWidth()
-					height = $element.innerHeight()
+					# Create and fill the annotationpopups model with data specified by user
+					popupScope = $rootScope.$new()
+					popupScope.annotation = new Annotation()
+					for field in options.fields
+						popupScope.annotation.data[field.name] = field.defaultValue
+
+					offset = $annotationElement.offset()
+					width = $annotationElement.innerWidth()
+					height = $annotationElement.innerHeight()
 
 					$popup = createAnnotationPopup annotationId, options.fields
-					$popup.css
-						left: element.offset().left - 320,
-						top: offset.top - (height / 2) - ($popup.innerHeight() / 2)
 
 					$compile($popup.get(0)) popupScope, ($el, scope)->
 						$el.appendTo("body");
+						popupHeight = $el.innerHeight()
+						$el.css
+							left: offset.left - 320,
+							top: offset.top - (height / 2) - (popupHeight / 2)
 						$el.fadeIn("slow");
 
 						$el.find(".ng-annotate-accept").on "click", (event)->
@@ -172,7 +229,7 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $timeout, Anno
 							$scope.onAnnotate scope.annotation
 							destroyAnnotationPopup $el, scope
 
-						$el.find(".ng-annotate-close").on "click", (event)->
+						$el.find(".ng-annotate-close, .ng-annotate-cancel").on "click", (event)->
 							event.preventDefault()
 							destroyAnnotationPopup $el, scope
 	}

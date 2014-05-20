@@ -19,6 +19,11 @@
 	&.red { color: #fff; background: #f00; border-color: #f00; }
 	&.green { color: #fff; background: #0f0; border-color: #0f0; }
 	&.blue { color: #fff; background: #00f; border-color: #00f; }
+	&.pink { color: #fff; background: #f0f; border-color: #f0f; }
+	&.yellow { color: #000; background: #ff0; border-color: #ff0; }
+	&.teal { color: #00f; background: #0ff; border-color: #0ff; }
+
+	&.strike { text-decoration: line-through; }
 }
 
 .ng-annotation-popup
@@ -45,7 +50,7 @@
 	content: "";
 	position: absolute;
 	border-top: 10px solid transparent;
-	border-left: 10px solid #fff;
+	border-left: 10px solid #000;
 	border-right: 10px solid transparent;
 	border-bottom: 10px solid transparent;
 	right: -20px;
