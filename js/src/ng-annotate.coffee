@@ -24,26 +24,8 @@ parseAnnotations = (text, annotations = [], indexOffset = 0)->
 		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " " + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
-createAnnotationPopup = (id, fields, showCancel = false)->
+createAnnotationPopup = (id, template, showCancel = false)->
 	$el = $ "<div class=\"ng-annotation-popup ng-annotation-popup-" + id + "\" />"
-	for field in fields
-		$label = $ "<label>" + field.label + "</label>"
-
-		if field.type is "textarea"
-			$field = $ "<textarea />",
-				"class": field.classes
-				name: field.name
-				"ng-model": "annotation.data." + field.name
-
-		else if field.type in ["number", "text", "date", "password"]
-			$field = $ "<input />",
-				type: field.type
-				"class": field.classes
-				name: field.name
-				"ng-model": "annotation.data." + field.name
-		
-		$el.append $label
-		$el.append $field
 
 	$acceptButton = $("<button>Accept</button>").addClass "ng-annotate-accept"
 	if showCancel
@@ -73,7 +55,7 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-ngAnnotate.factory "Annotation", ->
+ngAnnotate.factory "NGAnnotation", ->
 	Annotation = (data)->
 
 		angular.extend @,
@@ -89,7 +71,7 @@ ngAnnotate.factory "Annotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation)->
+ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, NGAnnotation, $http)->
 
 	return {
 		restrict: "A"
@@ -104,7 +86,7 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation
 			return ($scope, element, attrs)->
 
 				createAnnotation = (aId)->
-					annotation = new Annotation
+					annotation = new NGAnnotation
 						id: aId
 						type: "lilac"
 					sel = window.getSelection()
@@ -168,15 +150,7 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation
 				, true
 
 				options =
-					fields: [
-						{
-							name: "comment"
-							label: "Comment"
-							classes: "ng-annotation-comment"
-							type: "textarea"
-							defaultValue: "\"\""
-						}
-					]
+					popupTemplateUrl: ""
 				options = angular.extend options, $scope.options
 
 				mouseDown = false
@@ -206,30 +180,32 @@ ngAnnotate.directive "ngAnnotate", ($parse, $rootScope, $compile, $q, Annotation
 
 					# Create and fill the annotationpopups model with data specified by user
 					popupScope = $rootScope.$new()
-					popupScope.annotation = new Annotation()
-					for field in options.fields
-						popupScope.annotation.data[field.name] = field.defaultValue
+					popupScope.annotation = new NGAnnotation()
 
 					offsetTop = $annotationElement.offset().top
 					width = $annotationElement.innerWidth()
 					height = $annotationElement.innerHeight()
+					
+					getTemplatePromise = $http.get options.popupTemplateUrl
+					getTemplatePromise.then (response)->
+						console.log response
+						return
+						$popup = createAnnotationPopup annotationId
 
-					$popup = createAnnotationPopup annotationId, options.fields
+						$compile($popup.get(0)) popupScope, ($el, scope)->
+							$el.appendTo("body")
+							popupHeight = $el.innerHeight()
+							$el.css
+								left: element.offset().left - 320,
+								top: offsetTop + (height / 2) - (popupHeight / 2)
+							$el.fadeIn("slow");
 
-					$compile($popup.get(0)) popupScope, ($el, scope)->
-						$el.appendTo("body");
-						popupHeight = $el.innerHeight()
-						$el.css
-							left: element.offset().left - 320,
-							top: offsetTop + (popupHeight / 2) - (height / 2)
-						$el.fadeIn("slow");
+							$el.find(".ng-annotate-accept").on "click", (event)->
+								event.preventDefault()
+								$scope.onAnnotate scope.annotation
+								destroyAnnotationPopup $el, scope
 
-						$el.find(".ng-annotate-accept").on "click", (event)->
-							event.preventDefault()
-							$scope.onAnnotate scope.annotation
-							destroyAnnotationPopup $el, scope
-
-						$el.find(".ng-annotate-close, .ng-annotate-cancel").on "click", (event)->
-							event.preventDefault()
-							destroyAnnotationPopup $el, scope
+							$el.find(".ng-annotate-close, .ng-annotate-cancel").on "click", (event)->
+								event.preventDefault()
+								destroyAnnotationPopup $el, scope
 	}
