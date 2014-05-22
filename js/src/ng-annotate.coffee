@@ -24,21 +24,6 @@ parseAnnotations = (text, annotations = [], indexOffset = 0)->
 		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " " + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
-createAnnotationPopup = (id)->
-	$el = angular.element "<div class=\"ng-annotation-popup ng-annotation-popup-" + id + "\" />"
-	return $el
-
-destroyAnnotationPopup = ($popup, scope)->
-	$popup.find("button").off "click"
-	$popup.fadeOut "slow", ->
-		scope.$destroy()
-		$popup.remove()
-
-showAnnotation = ($element)->
-
-generateId = ->
-	return new Date().getTime()
-
 getAnnotationById = (annotations, aId)->
 	for a in annotations
 		if aId is a.id
@@ -48,14 +33,6 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-removeAnnotation = (id, annotations)->
-	for a, i in annotations
-		if a.id is id
-			annotations.splice i, 1
-			return
-		if a.children.length
-			removeAnnotation id, a.children
-
 ngAnnotate.factory "NGAnnotatePopupStack", ->
 	NGAnnotatePopupStack = ->
 		stack = []
@@ -64,23 +41,96 @@ ngAnnotate.factory "NGAnnotatePopupStack", ->
 				stack.push
 					key: key,
 					value: item
+
+			moveToTop: (key)->
+				for p, i in stack
+					if p.key is key
+						item = stack.splice(i, 1)[0]
+						break
+				if item?
+					stack.push item
+
 			top: ->
-				return stack[stack.length - 1]
+				item = stack[stack.length - 1]
+				if item?
+					return item.value
+
+			keys: ->
+				keys = []
+				for p in stack
+					keys.push p.key
+				return keys
+
+			get: (key)->
+				for p in stack
+					if p.key is key
+						return p.value
+
 			remove: (key)->
 				for i in [stack.length - 1..0] by -1
 					item = stack[i]
 					if item.key is key
-						stack.splice i, 1
+						item.value.destroy()
+						return stack.splice(i, 1)[0]
+
 			clear: ->
+				for i in [stack.length - 1..0] by -1
+					item = stack[i]
+					item.value.destroy()
+					stack.splice i, 1
 				stack = []
+				return
+
+			length: ->
+				return stack.length
 
 	return NGAnnotatePopupStack
+
+ngAnnotate.factory "NGAnnotatePopup", ->
+	NGAnnotatePopup = (scope)->
+
+		angular.extend @,
+			scope: scope
+			$el: angular.element "<div class=\"ng-annotation-popup\" />"
+			$anchor: null
+
+			show: (cb = angular.noop, speed = "fast")->
+				@$el.fadeIn speed, cb
+
+			hide: (cb = angular.noop, speed = "fast")->
+				@$el.fadeOut speed, cb
+
+			isVisible: ->
+				return @$el.is ":visible"
+
+			positionTop: ->
+				if not @$anchor?
+					throw new Error "NG_ANNOTATE_NO_ANCHOR_ON_POPUP"
+
+				anchorOffsetTop = @$anchor.offset().top
+				anchorHeight = @$anchor.innerHeight()
+				popupHeight = @$el.innerHeight()
+				@$el.css
+					top: anchorOffsetTop + (anchorHeight / 2) - (popupHeight / 2)
+
+			positionLeft: (value)->
+				@$el.css
+					left: value
+
+			destroy: ->
+				scope = @scope
+				$el = @$el
+				@hide ->
+					scope.$destroy()
+					$el.remove()
+
+	return NGAnnotatePopup
 
 ngAnnotate.factory "NGAnnotation", ->
 	Annotation = (data)->
 
 		angular.extend @,
-			id: 0,
+			id: new Date().getTime(),
 			startIndex: null
 			endIndex: null
 			data: {}
@@ -92,7 +142,7 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotation, NGAnnotatePopupStack)->
+ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotation, NGAnnotatePopup, NGAnnotatePopupStack)->
 	return {
 		restrict: "A"
 		scope:
@@ -109,6 +159,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 				# Cache the template when we fetch it
 				templateData = ""
 
+				$scope.$on "$destroy", ->
+					popupStack.clear()
+
 				onAnnotationsChange = ->
 					if !$scope.text.length
 						return
@@ -121,6 +174,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 				# Setting options
 				options =
 					popupTemplateUrl: ""
+					tooltipTemplateUrl: ""
 				options = angular.extend options, $scope.options
 
 				getTemplate = (url)->
@@ -130,16 +184,33 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						return deferred.promise
 					
 					return $http.get(url).then (response)->
+						templateData = response.data
 						return response.data
 
-				createAnnotation = (aId)->
-					annotation = new NGAnnotation
-						id: aId
+				removeChildren = (annotation)->
+					for i in [annotation.children.length - 1..0] by -1
+						a = annotation.children[i]
+						removeChildren a
+						key = "ng-annotation-" + a.id
+						popup = popupStack.remove key
+						a.children.splice i, 1
+
+				removeAnnotation = (id, annotations)->
+					for a, i in annotations
+						if a.id is id
+							removeChildren a
+							key = "ng-annotation-" + a.id
+							popupStack.remove key
+							annotations.splice i, 1
+							return
+
+				createAnnotation = ->
+					annotation = new NGAnnotation()
 					sel = window.getSelection()
 					if sel.type isnt "Range"
 						throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
 					range = sel.getRangeAt 0
-					if range.startContainer.parentElement isnt range.endContainer.parentElement
+					if range.startContainer isnt range.endContainer
 						throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
 
 					if range.startContainer.parentElement.nodeName is "SPAN" # Is a child annotation
@@ -164,6 +235,10 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							prevAnnotation = getAnnotationById $scope.annotations, prevSiblingId
 							annotation.startIndex = prevAnnotation.endIndex + range.startOffset
 							annotation.endIndex = prevAnnotation.endIndex + range.endOffset
+						else
+							# Doesn't have a prev sibling, alrighty then
+							annotation.startIndex = range.startOffset
+							annotation.endIndex = range.endOffset
 					else
 						# Nope
 						annotation.startIndex = range.startOffset
@@ -173,43 +248,50 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					return annotation
 
 				onSelect = (event)->
-					# Generate a random ID to assign this annotation
-					annotationId = generateId()
-
 					try
-						annotation = createAnnotation annotationId
+						annotation = createAnnotation()
 						$scope.$apply()
-						$span = element.find(".ng-annotation-" + annotationId)
+						$span = element.find ".ng-annotation-" + annotation.id
 					catch ex
 						$scope.onAnnotateError ex
 						return
 
-					spanOffsetTop = $span.offset().top
-					spanHeight = $span.innerHeight()
-					
+					key = "ng-annotation-" + annotation.id
+					topStackPopup = popupStack.top()
+					if topStackPopup?
+						topStackPopup.hide()
+
+					popup = popupStack.get key
+					if popup?
+						popup.show()
+						popupStack.moveToTop key
+						return
+
+					popup = new NGAnnotatePopup $rootScope.$new()
+					popup.scope.$isNew = true
+					popup.scope.$annotation = annotation
+					popup.$anchor = $span
+
+					popup.scope.$reject = ->
+						removeAnnotation annotation.id, $scope.annotations
+						popupStack.remove key
+						popup.destroy()
+
+					popup.scope.$close = ->
+						$scope.onAnnotate popup.scope.$annotation
+						popupStack.remove key
+						popup.destroy()
+
+					popupStack.push key, popup
+
 					getTemplatePromise = getTemplate options.popupTemplateUrl
 					getTemplatePromise.then (template)->
-						$popup = createAnnotationPopup annotationId
-						popupScope = $rootScope.$new()
-						popupScope.isNew = true
-
-						popupScope.annotation = annotation
-						popupScope.$reject = ->
-							removeAnnotation annotationId, $scope.annotations
-							destroyAnnotationPopup $popup, popupScope
-
-						popupScope.$close = ->
-							$scope.onAnnotate popupScope.annotation
-							destroyAnnotationPopup $popup, popupScope
-
-						$popup.appendTo "body"
-						$compile(angular.element(template)) popupScope, ($el, scope)->
-							$popup.html $el
-							popupHeight = $popup.innerHeight()
-							$popup.css
-								left: element.offset().left - 320,
-								top: spanOffsetTop + (spanHeight / 2) - (popupHeight / 2)
-							$popup.fadeIn "slow"
+						$compile(angular.element(template)) popup.scope, ($content)->
+							popup.$el.html $content
+							popup.$el.appendTo "body"
+							popup.positionTop()
+							popup.positionLeft element.offset().left - 320
+							popup.show()
 
 				onClick = (event)->
 					$target = angular.element event.target
@@ -218,33 +300,50 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					if not targetId?
 						return
 
-					spanOffsetTop = $target.offset().top
-					spanHeight = $target.innerHeight()
+					key = "ng-annotation-" + targetId
+					topStackPopup = popupStack.top()
+					if topStackPopup?
+						if topStackPopup.scope.$annotation.id is targetId
+							if topStackPopup.isVisible()
+								topStackPopup.hide()
+							else
+								topStackPopup.show()
+							return
 
+						topStackPopup.hide()
+
+					popup = popupStack.get key
+					if popup?
+						popup.show()
+						popup.scope.$isNew = false
+						popupStack.moveToTop key
+						return
+
+					popup = new NGAnnotatePopup $rootScope.$new()
+					popup.scope.$isNew = false
+					popup.scope.$annotation = getAnnotationById $scope.annotations, targetId
+					popup.$anchor = $target
+
+					popup.scope.$reject = ->
+						removeAnnotation targetId, $scope.annotations
+						popupStack.remove key
+						popup.destroy()
+
+					popup.scope.$close = ->
+						$scope.onAnnotate popup.scope.$annotation
+						popupStack.remove key
+						popup.destroy()
+
+					popupStack.push key, popup
+					
 					getTemplatePromise = getTemplate options.popupTemplateUrl
 					getTemplatePromise.then (template)->
-						$popup = createAnnotationPopup targetId
-						popupScope = $rootScope.$new()
-						popupScope.isNew = false
-
-						popupScope.annotation = getAnnotationById $scope.annotations, targetId
-
-						popupScope.$reject = ->
-							removeAnnotation targetId, $scope.annotations
-							destroyAnnotationPopup $popup
-
-						popupScope.$close = ->
-							$scope.onAnnotate popupScope.annotation
-							destroyAnnotationPopup $popup, popupScope
-
-						$popup.appendTo "body"
-						$compile(angular.element(template)) popupScope, ($el, scope)->
-							$popup.html $el
-							popupHeight = $popup.innerHeight()
-							$popup.css
-								left: element.offset().left - 320,
-								top: spanOffsetTop + (spanHeight / 2) - (popupHeight / 2)
-							$popup.fadeIn "slow"
+						$compile(angular.element(template)) popup.scope, ($content)->
+							popup.$el.html $content
+							popup.$el.appendTo "body"
+							popup.positionTop()
+							popup.positionLeft element.offset().left - 320
+							popup.show()
 
 				onMouseOver = (event)->
 
@@ -258,4 +357,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						onSelect event
 					else if selection.type is "Caret" and event.target.nodeName is "SPAN"
 						onClick event
+					else
+						topStackPopup = popupStack.top()
+						if topStackPopup?
+							topStackPopup.hide()
 	}
