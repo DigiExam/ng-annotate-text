@@ -1,6 +1,6 @@
 {
   "name": "ng-annotate",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "An AngularJS directive to assist with annotation of text",
   "repository": {
     "type": "git",
