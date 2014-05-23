@@ -20,7 +20,7 @@ module.exports = (grunt) ->
 
 		uglify:
 			options:
-				mangle: true
+				mangle: false
 			release:
 				src: "<%= coffee.release.dest %>"
 				dest: "dist/<%= pkg.version %>/js/<%= pkg.name %>-<%= pkg.version %>.min.js"
