@@ -48,3 +48,29 @@
 	top: 50%;
 	margin-top: -10px;
 }
+
+.ng-annotation-tooltip
+{
+	width: 300px;
+	position: absolute;
+	z-index: 1000;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	box-shadow: 0 0 5px #777;
+	display: none;
+	padding: 10px;
+}
+
+.ng-annotation-tooltip:after
+{
+	content: "";
+	position: absolute;
+	border-top: 10px solid transparent;
+	border-left: 10px solid #000;
+	border-right: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	right: -20px;
+	top: 50%;
+	margin-top: -10px;
+}
