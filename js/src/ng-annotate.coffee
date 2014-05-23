@@ -127,7 +127,7 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip, NGAnnotateStack)->
+ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
 	return {
 		restrict: "A"
 		scope:
@@ -296,6 +296,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					if not targetId?
 						return
 
+					if activePopups.length
+						for p in activePopups
+							if p.scope? and p.scope.$annotation.id is targetId
+								clearPopups()
+								return
 					clearPopups()
 					clearTooltips()
 
