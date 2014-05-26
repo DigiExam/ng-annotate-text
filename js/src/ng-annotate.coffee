@@ -357,7 +357,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							tooltip.$el.html $content
 							tooltip.$el.appendTo "body"
 							tooltip.positionTop()
-							tooltip.positionLeft element.offset().left - popup.$el.innerWidth()
+							tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
 							tooltip.show()
 
 				onMouseLeave = (event)->
