@@ -148,12 +148,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 				tooltipTemplateData = ""
 
 				onAnnotationsChange = ->
-					if !$scope.text.length
+					if not $scope.text? or !$scope.text.length
 						return
 					t = parseAnnotations $scope.text, $scope.annotations
 					tElement.html t
 
 				# Annotation parsing
+				$scope.$watch "text", onAnnotationsChange
 				$scope.$watch "annotations", onAnnotationsChange, true
 
 				# Setting options
