@@ -168,12 +168,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					activePopups = []
 
 				clearTooltips = ->
-					for t in activeTooltips
-						t.destroy()
-					activeTooltips = []
+					for i in [activeTooltips.length - 1..0] by -1
+						activeTooltips[i].destroy()
+						activeTooltips.splice i, 1
 
 				$scope.$on "$destroy", ->
 					clearPopups()
+					clearTooltips()
 
 				getPopupTemplate = (url)->
 					if popupTemplateData.length
@@ -331,6 +332,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							popup.show()
 
 				onMouseEnter = (event)->
+					event.stopPropagation()
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
@@ -342,8 +344,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					# We don't want to show the tooltip if a popup with the annotation is open
 					if activePopups.length
 						return
-
-					clearTooltips()
 
 					tooltip = new NGAnnotateTooltip $rootScope.$new()
 					tooltip.scope.$annotation = annotation
@@ -360,6 +360,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							tooltip.show()
 
 				onMouseLeave = (event)->
+					event.stopPropagation()
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
