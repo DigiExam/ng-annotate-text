@@ -1,0 +1,81 @@
+.text-center {
+  text-align: center; }
+
+.ng-annotation {
+  border-bottom: 1px solid #000;
+  cursor: pointer; }
+  .ng-annotation.red {
+    color: #fff;
+    background: #f00;
+    border-color: #f00; }
+  .ng-annotation.green {
+    color: #fff;
+    background: #0f0;
+    border-color: #0f0; }
+  .ng-annotation.blue {
+    color: #fff;
+    background: #00f;
+    border-color: #00f; }
+  .ng-annotation.pink {
+    color: #fff;
+    background: #f0f;
+    border-color: #f0f; }
+  .ng-annotation.yellow {
+    color: #000;
+    background: #ff0;
+    border-color: #ff0; }
+  .ng-annotation.teal {
+    color: #00f;
+    background: #0ff;
+    border-color: #0ff; }
+  .ng-annotation.strike {
+    text-decoration: line-through; }
+
+.ng-annotation-popup {
+  width: 300px;
+  position: absolute;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 0 10px #777;
+  display: none;
+  padding: 10px; }
+
+.ng-annotation-popup label {
+  display: block; }
+
+.ng-annotation-popup:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  background: #fff;
+  -webkit-transform: rotate(45deg);
+  right: -6px;
+  top: 50%;
+  margin-top: -5px;
+  z-index: 990;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc; }
+
+.ng-annotation-tooltip {
+  width: 300px;
+  position: absolute;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 0 10px #777;
+  display: none;
+  padding: 10px; }
+
+.ng-annotation-tooltip:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  background: #fff;
+  -webkit-transform: rotate(45deg);
+  right: -6px;
+  top: 50%;
+  margin-top: -5px;
+  z-index: 990;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc; }
