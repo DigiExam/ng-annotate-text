@@ -135,6 +135,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 			annotations: "="
 			options: "="
 			onAnnotate: "="
+			onAnnotateDelete: "="
 			onAnnotateError: "="
 		compile: (tElement, tAttrs, transclude)->
 
@@ -272,6 +273,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 					popup.scope.$reject = ->
 						removeAnnotation annotation.id, $scope.annotations
+						$scope.onAnnotateDelete annotation
 						clearPopups()
 						popup.destroy()
 
@@ -306,18 +308,22 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					clearPopups()
 					clearTooltips()
 
+					annotation = getAnnotationById $scope.annotations, targetId
 					popup = new NGAnnotatePopup $rootScope.$new()
 					popup.scope.$isNew = false
-					popup.scope.$annotation = getAnnotationById $scope.annotations, targetId
+					popup.scope.$annotation = annotation
 					popup.$anchor = $target
 
 					popup.scope.$reject = ->
 						removeAnnotation targetId, $scope.annotations
+						if typeof($scope.onAnnotateDelete) is "function"
+							$scope.onAnnotateDelete annotation
 						clearPopups()
 						popup.destroy()
 
 					popup.scope.$close = ->
-						$scope.onAnnotate popup.scope.$annotation
+						if typeof($scope.onAnnotate) is "function"
+							$scope.onAnnotate popup.scope.$annotation
 						clearPopups()
 						popup.destroy()
 
