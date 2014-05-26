@@ -288,7 +288,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							popup.$el.html $content
 							popup.$el.appendTo "body"
 							popup.positionTop()
-							popup.positionLeft element.offset().left - 320
+							popup.positionLeft element.offset().left - popup.$el.innerWidth()
 							popup.show()
 
 				onClick = (event)->
