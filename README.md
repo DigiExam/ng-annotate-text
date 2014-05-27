@@ -1,6 +1,12 @@
 ng-annotate
 =========================
 
+# Getting started
+
+- Install NodeJS
+- Run **npm install -g grunt-cli**
+- Run **npm install** in the ng-annotate folder
+- Run **grunt serve**
 
 # Annotation colors
 
