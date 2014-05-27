@@ -206,6 +206,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 				removeAnnotation = (id, annotations)->
 					for a, i in annotations
+						removeAnnotation id, a.children
+
 						if a.id is id
 							removeChildren a
 							annotations.splice i, 1
@@ -262,7 +264,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					catch ex
 						if $scope.onAnnotateError?
 							$scope.onAnnotateError ex
-							
+
 						return
 
 					clearPopups()
