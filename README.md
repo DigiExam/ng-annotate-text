@@ -1,6 +1,10 @@
 ng-annotate
 =========================
 
+ng-annotate is a library to annotate texts in AngularJS.
+
+![Screenshot](http://i.imgur.com/IHjxXn1.png?1)
+
 # Getting started
 
 - Install NodeJS
