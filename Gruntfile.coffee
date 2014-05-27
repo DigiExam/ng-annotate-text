@@ -1,8 +1,11 @@
 module.exports = (grunt) ->
-	distTasks = ["coffee", "sass", "uglify", "cssmin"]
-	defaultTasks = ["coffee", "sass"]
-	watchTasks = ["coffee", "sass"]
-	serveTasks = ["connect", "watch"]
+	# Release
+	distTasks = ["coffee:release", "sass:release", "uglify", "cssmin"]	
+
+	# Development
+	defaultTasks = ["coffee:development", "sass:development"]
+	watchTasks = ["coffee:development", "sass:development"]
+	serveTasks = ["connect", "coffee:development", "sass:development", "watch"]
 
 	grunt.initConfig
 		pkg: grunt.file.readJSON "package.json"
@@ -14,10 +17,18 @@ module.exports = (grunt) ->
 				src: ["js/src/ng-annotate.coffee"]
 				dest: "dist/<%= pkg.version %>/js/<%= pkg.name %>-<%= pkg.version %>.js"
 
+			development:
+				src: ["js/src/ng-annotate.coffee"]
+				dest: "dev/<%= pkg.name %>-unstable.js"
+
 		sass:
 			release:
 				src: ["css/src/ng-annotate.scss"]
 				dest: "dist/<%= pkg.version %>/css/<%= pkg.name %>-<%= pkg.version %>.css"
+
+			development:
+				src: ["css/src/ng-annotate.scss"]
+				dest: "dev/<%= pkg.name %>-unstable.css"
 
 		uglify:
 			options:
@@ -42,7 +53,7 @@ module.exports = (grunt) ->
 					port: 3000
 					hostname: "localhost"
 					open: "http://localhost:3000/example-app/"
-											
+
 	
 	grunt.loadNpmTasks "grunt-contrib-uglify"
 	grunt.loadNpmTasks "grunt-contrib-coffee"
