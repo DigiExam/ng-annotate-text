@@ -4,9 +4,9 @@ ng-annotate
 
 # Annotation colors
 
-Main annotation class is `.ng-annotation`
+Main annotation class is `.ng-annotation`.
 An annotation is extended by adding a type class to `.ng-annotation`.
-Available type classes are
+Available type classes are:
 	
 	.red - Sets background to red, color to white and border-color to red.
 	.green - Sets background to green, color to white and border-color to green.
