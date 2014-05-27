@@ -206,6 +206,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 				removeAnnotation = (id, annotations)->
 					for a, i in annotations
+						removeAnnotation id, a.children
+
 						if a.id is id
 							removeChildren a
 							annotations.splice i, 1
@@ -260,7 +262,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						$scope.$apply()
 						$span = element.find ".ng-annotation-" + annotation.id
 					catch ex
-						$scope.onAnnotateError ex
+						if $scope.onAnnotateError?
+							$scope.onAnnotateError ex
+
 						return
 
 					clearPopups()
@@ -273,12 +277,17 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 					popup.scope.$reject = ->
 						removeAnnotation annotation.id, $scope.annotations
-						$scope.onAnnotateDelete annotation
+						
+						if $scope.onAnnotateDelete?
+							$scope.onAnnotateDelete annotation
+
 						clearPopups()
 						popup.destroy()
 
 					popup.scope.$close = ->
-						$scope.onAnnotate popup.scope.$annotation
+						if $scope.onAnnotate?
+							$scope.onAnnotate popup.scope.$annotation
+
 						clearPopups()
 						popup.destroy()
 
@@ -388,4 +397,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						onSelect event
 					else if selection.type is "Caret" and event.target.nodeName is "SPAN"
 						onClick event
+					else if selection.type is "Caret"
+						clearTooltips()
+						clearPopups()
 	}
