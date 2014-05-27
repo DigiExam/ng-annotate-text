@@ -1,0 +1,22 @@
+<div ng-controller="AnnotationController">
+	<label for="comment">
+		Comment
+	</label>
+	<textarea id="comment" ng-model="$annotation.data.comment" class="form-control"></textarea>
+	<label for="score">
+		Score
+	</label>
+	<input type="number" ng-model="$annotation.data.score" class="form-control"></input>
+	<label for="color">
+		Color
+	</label>
+	<select id="color" class="form-control" ng-model="$annotation.type" ng-options="c.value as c.name for c in annotationColours">
+		<option value="">-- Choose color --</option>
+	</select>
+
+	<div style="margin-top: 10px;">
+		<button class="btn btn-success pull-right" ng-click="close()">Ok</button>
+		<button class="btn" ng-click="reject()" ng-show="$isNew">Cancel</button>
+		<button class="btn btn-danger" ng-click="reject()" ng-show="!$isNew">Delete</button>
+	</div>
+</div>
