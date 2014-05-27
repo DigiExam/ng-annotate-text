@@ -397,4 +397,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						onSelect event
 					else if selection.type is "Caret" and event.target.nodeName is "SPAN"
 						onClick event
+					else if selection.type is "Caret"
+						clearTooltips()
+						clearPopups()
 	}
