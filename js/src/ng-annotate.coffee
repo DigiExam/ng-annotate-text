@@ -366,6 +366,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
+					clearTooltips()
+
 					if not targetId?
 						return
 
