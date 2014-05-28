@@ -291,6 +291,10 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						clearPopups()
 						popup.destroy()
 
+					popup.scope.$reposition = ->
+						popup.positionTop()
+						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+
 					activePopups.push popup
 
 					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
@@ -336,6 +340,10 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						clearPopups()
 						popup.destroy()
 
+					popup.scope.$reposition = ->
+						popup.positionTop()
+						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+
 					activePopups.push popup
 					
 					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
@@ -364,6 +372,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					tooltip = new NGAnnotateTooltip $rootScope.$new()
 					tooltip.scope.$annotation = annotation
 					tooltip.$anchor = $target
+
+					tooltip.scope.$reposition = ->
+						tooltip.positionTop()
+						tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
+
 					activeTooltips.push tooltip
 
 					getTemplatePromise = getTooltipTemplate options.tooltipTemplateUrl
