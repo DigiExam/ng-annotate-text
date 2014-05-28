@@ -8,7 +8,7 @@ app.controller("AnnotationController", function($scope)
 		{ name: "Blue", value: "blue" },
 		{ name: "Yellow", value: "yellow" },
 		{ name: "Pink", value: "pink" },
-		{ name: "Teal", value: "teal" }
+		{ name: "Aqua", value: "Aqua" }
 	];
 
 	$scope.close = function()
