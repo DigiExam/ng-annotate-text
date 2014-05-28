@@ -283,6 +283,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 						clearPopups()
 						popup.destroy()
+						return
 
 					popup.scope.$close = ->
 						if $scope.onAnnotate?
@@ -290,10 +291,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 						clearPopups()
 						popup.destroy()
+						return
 
 					popup.scope.$reposition = ->
 						popup.positionTop()
 						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+						return
 
 					activePopups.push popup
 
@@ -333,16 +336,19 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							$scope.onAnnotateDelete annotation
 						clearPopups()
 						popup.destroy()
+						return
 
 					popup.scope.$close = ->
 						if typeof($scope.onAnnotate) is "function"
 							$scope.onAnnotate popup.scope.$annotation
 						clearPopups()
 						popup.destroy()
+						return
 
 					popup.scope.$reposition = ->
 						popup.positionTop()
 						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+						return
 
 					activePopups.push popup
 					
@@ -376,6 +382,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					tooltip.scope.$reposition = ->
 						tooltip.positionTop()
 						tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
+						return
 
 					activeTooltips.push tooltip
 
