@@ -270,44 +270,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					clearPopups()
 					clearTooltips()
 
-					popup = new NGAnnotatePopup $rootScope.$new()
-					popup.scope.$isNew = true
-					popup.scope.$annotation = annotation
-					popup.$anchor = $span
-
-					popup.scope.$reject = ->
-						removeAnnotation annotation.id, $scope.annotations
-						
-						if $scope.onAnnotateDelete?
-							$scope.onAnnotateDelete annotation
-
-						clearPopups()
-						popup.destroy()
-						return
-
-					popup.scope.$close = ->
-						if $scope.onAnnotate?
-							$scope.onAnnotate popup.scope.$annotation
-
-						clearPopups()
-						popup.destroy()
-						return
-
-					popup.scope.$reposition = ->
-						popup.positionTop()
-						popup.positionLeft element.offset().left - popup.$el.innerWidth()
-						return
-
-					activePopups.push popup
-
-					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
-					getTemplatePromise.then (template)->
-						$compile(angular.element(template)) popup.scope, ($content)->
-							popup.$el.html $content
-							popup.$el.appendTo "body"
-							popup.positionTop()
-							popup.positionLeft element.offset().left - popup.$el.innerWidth()
-							popup.show()
+					loadAnnotationPopup annotation, $span, true
 
 				onClick = (event)->
 					$target = angular.element event.target
@@ -321,45 +284,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 							if p.scope? and p.scope.$annotation.id is targetId
 								clearPopups()
 								return
+					annotation = getAnnotationById $scope.annotations, targetId
+
 					clearPopups()
 					clearTooltips()
 
-					annotation = getAnnotationById $scope.annotations, targetId
-					popup = new NGAnnotatePopup $rootScope.$new()
-					popup.scope.$isNew = false
-					popup.scope.$annotation = annotation
-					popup.$anchor = $target
-
-					popup.scope.$reject = ->
-						removeAnnotation targetId, $scope.annotations
-						if typeof($scope.onAnnotateDelete) is "function"
-							$scope.onAnnotateDelete annotation
-						clearPopups()
-						popup.destroy()
-						return
-
-					popup.scope.$close = ->
-						if typeof($scope.onAnnotate) is "function"
-							$scope.onAnnotate popup.scope.$annotation
-						clearPopups()
-						popup.destroy()
-						return
-
-					popup.scope.$reposition = ->
-						popup.positionTop()
-						popup.positionLeft element.offset().left - popup.$el.innerWidth()
-						return
-
-					activePopups.push popup
-					
-					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
-					getTemplatePromise.then (template)->
-						$compile(angular.element(template)) popup.scope, ($content)->
-							popup.$el.html $content
-							popup.$el.appendTo "body"
-							popup.positionTop()
-							popup.positionLeft element.offset().left - popup.$el.innerWidth()
-							popup.show()
+					loadAnnotationPopup annotation, $target, false
 
 				onMouseEnter = (event)->
 					event.stopPropagation()
@@ -406,6 +336,46 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 						return
 
 					clearTooltips()
+
+				loadAnnotationPopup = (annotation, anchor, isNew)->
+					popup = new NGAnnotatePopup $rootScope.$new()
+					popup.scope.$isNew = isNew
+					popup.scope.$annotation = annotation
+					popup.$anchor = anchor
+
+					popup.scope.$reject = ->
+						removeAnnotation annotation.id, $scope.annotations
+						
+						if $scope.onAnnotateDelete?
+							$scope.onAnnotateDelete annotation
+
+						clearPopups()
+						popup.destroy()
+						return
+
+					popup.scope.$close = ->
+						if $scope.onAnnotate?
+							$scope.onAnnotate popup.scope.$annotation
+
+						clearPopups()
+						popup.destroy()
+						return
+
+					popup.scope.$reposition = ->
+						popup.positionTop()
+						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+						return
+
+					activePopups.push popup
+
+					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
+					getTemplatePromise.then (template)->
+						$compile(angular.element(template)) popup.scope, ($content)->
+							popup.$el.html $content
+							popup.$el.appendTo "body"
+							popup.positionTop()
+							popup.positionLeft element.offset().left - popup.$el.innerWidth()
+							popup.show()
 
 				element.on "mouseover", "span", onMouseEnter
 				element.on "mouseleave", "span", onMouseLeave
