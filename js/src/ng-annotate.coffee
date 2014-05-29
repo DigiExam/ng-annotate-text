@@ -127,7 +127,7 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
+ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
 	return {
 		restrict: "A"
 		scope:
@@ -142,7 +142,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 			return ($scope, element, attrs)->
 				activePopups = []
 				activeTooltips = []
-
 
 				# Cache the template when we fetch it
 				popupTemplateData = ""
@@ -160,7 +159,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 				# Setting options
 				options =
+					popupController: ""
 					popupTemplateUrl: ""
+					tooltipController: ""
 					tooltipTemplateUrl: ""
 				options = angular.extend options, $scope.options
 
@@ -178,25 +179,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					clearPopups()
 					clearTooltips()
 
-				getPopupTemplate = (url)->
-					if popupTemplateData.length
-						deferred = $q.defer()
-						deferred.resolve popupTemplateData
-						return deferred.promise
-					
-					return $http.get(url).then (response)->
-						popupTemplateData = response.data
-						return response.data
+				$http.get(options.popupTemplateUrl).then (response)->
+					popupTemplateData = response.data
 
-				getTooltipTemplate = (url)->
-					if tooltipTemplateData.length
-						deferred = $q.defer()
-						deferred.resolve tooltipTemplateData
-						return deferred.promise
-
-					return $http.get(url).then (response)->
-						tooltipTemplateData = response.data
-						return response.data
+				$http.get(options.tooltipTemplateUrl).then (response)->
+					tooltipTemplateData = response.data
 
 				removeChildren = (annotation)->
 					for i in [annotation.children.length - 1..0] by -1
@@ -257,6 +244,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					return annotation
 
 				onSelect = (event)->
+					if popupTemplateData.length is 0
+						return
+
 					try
 						annotation = createAnnotation()
 						$scope.$apply()
@@ -273,6 +263,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					loadAnnotationPopup annotation, $span, true
 
 				onClick = (event)->
+					if popupTemplateData.length is 0
+						return
+
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
@@ -292,6 +285,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 					loadAnnotationPopup annotation, $target, false
 
 				onMouseEnter = (event)->
+					if tooltipTemplateData.length is 0
+						return
+
 					event.stopPropagation()
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
@@ -318,17 +314,27 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 					activeTooltips.push tooltip
 
-					getTemplatePromise = getTooltipTemplate options.tooltipTemplateUrl
-					getTemplatePromise.then (template)->
-						$compile(angular.element(template)) tooltip.scope, ($content)->
-							tooltip.$el.html $content
-							tooltip.$el.appendTo "body"
-							tooltip.positionTop()
-							tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
-							tooltip.show()
+					locals = 
+						$scope: tooltip.scope
+						$template: tooltipTemplateData
+
+					tooltip.$el.html locals.$template
+					tooltip.$el.appendTo "body"
+					
+					if options.tooltipController
+						controller = $controller options.tooltipController, locals
+						tooltip.$el.data "$ngControllerController", controller
+						tooltip.$el.children().data "$ngControllerController", controller
+
+					$compile(tooltip.$el) tooltip.scope
+					tooltip.positionTop()
+					tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
+					tooltip.scope.$apply()
+					tooltip.show()
 
 				onMouseLeave = (event)->
 					event.stopPropagation()
+
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
@@ -368,14 +374,23 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, NGAnnotatio
 
 					activePopups.push popup
 
-					getTemplatePromise = getPopupTemplate options.popupTemplateUrl
-					getTemplatePromise.then (template)->
-						$compile(angular.element(template)) popup.scope, ($content)->
-							popup.$el.html $content
-							popup.$el.appendTo "body"
-							popup.positionTop()
-							popup.positionLeft element.offset().left - popup.$el.innerWidth()
-							popup.show()
+					locals = 
+						$scope: popup.scope
+						$template: popupTemplateData
+
+					popup.$el.html locals.$template
+					popup.$el.appendTo "body"
+					
+					if options.popupController
+						controller = $controller options.popupController, locals
+						popup.$el.data "$ngControllerController", controller
+						popup.$el.children().data "$ngControllerController", controller
+
+					$compile(popup.$el) popup.scope
+					popup.positionTop()
+					popup.positionLeft element.offset().left - popup.$el.innerWidth()
+					popup.scope.$apply()
+					popup.show()
 
 				element.on "mouseover", "span", onMouseEnter
 				element.on "mouseleave", "span", onMouseLeave
