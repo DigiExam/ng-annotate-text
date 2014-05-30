@@ -127,9 +127,9 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
+ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
 	return {
-		restrict: "A"
+		restrict: "E"
 		scope:
 			text: "="
 			annotations: "="
@@ -137,6 +137,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			onAnnotate: "="
 			onAnnotateDelete: "="
 			onAnnotateError: "="
+		template: "<p ng-bind-html=\"content\"></p>"
+		replace: true
 		compile: (tElement, tAttrs, transclude)->
 
 			return ($scope, element, attrs)->
@@ -151,7 +153,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					if not $scope.text? or !$scope.text.length
 						return
 					t = parseAnnotations $scope.text, $scope.annotations
-					tElement.html t
+					$scope.content = $sce.trustAsHtml t
 
 				# Annotation parsing
 				$scope.$watch "text", onAnnotationsChange

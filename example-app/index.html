@@ -18,14 +18,14 @@
 				<h1>NG-ANNOTATE</h1>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" ng-repeat="t in texts">
 			<div style="width: 700px; margin: 0 auto;">
-				<p ng-annotate options="options"
-					annotations="annotations"
+				<ng-annotate options="options"
+					annotations="annotations[$index]"
 					on-annotate="onAnnotate"
 					on-annotate-error="onAnnotateError"
-					text="text">
-				</p>
+					text="t">
+				</ng-annotate>
 			</div>
 		</div>
 	</div>
