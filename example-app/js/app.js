@@ -1,6 +1,6 @@
 var app = angular.module("app", ["ngAnnotate"]);
 
-app.controller("AnnotationController", function($scope)
+app.controller("AnnotationController", function($scope, $timeout)
 {
 	$scope.annotationColours = [
 		{ name: "Red", value: "red" },
@@ -20,6 +20,8 @@ app.controller("AnnotationController", function($scope)
 	{
 		$scope.$reject()
 	};
+
+	$timeout(function() { $scope.$reposition(); });
 });
 
 app.controller("MainController", function($scope, $timeout, NGAnnotation)
