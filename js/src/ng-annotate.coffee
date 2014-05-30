@@ -159,6 +159,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 				# Setting options
 				options =
+					readonly: false
 					popupController: ""
 					popupTemplateUrl: ""
 					tooltipController: ""
@@ -179,11 +180,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					clearPopups()
 					clearTooltips()
 
-				$http.get(options.popupTemplateUrl).then (response)->
-					popupTemplateData = response.data
+				if options.popupTemplateUrl
+					$http.get(options.popupTemplateUrl).then (response)->
+						popupTemplateData = response.data
 
-				$http.get(options.tooltipTemplateUrl).then (response)->
-					tooltipTemplateData = response.data
+				if options.tooltipTemplateUrl
+					$http.get(options.tooltipTemplateUrl).then (response)->
+						tooltipTemplateData = response.data
 
 				removeChildren = (annotation)->
 					for i in [annotation.children.length - 1..0] by -1
@@ -396,6 +399,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 				element.on "mouseleave", "span", onMouseLeave
 
 				element.on "mouseup", (event)->
+					if options.readonly
+						return
 					# We need to determine if the user actually selected something
 					# or if he just clicked on an annotation
 					selection = window.getSelection()
