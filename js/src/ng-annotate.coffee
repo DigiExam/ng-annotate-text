@@ -64,10 +64,11 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 				@$el.css
 					left: value
 
-			destroy: ->
+			destroy: (cb = angular.noop)->
 				scope = @scope
 				$el = @$el
 				@hide ->
+					cb()
 					scope.$destroy()
 					$el.remove()
 
@@ -104,12 +105,16 @@ ngAnnotate.factory "NGAnnotateTooltip", ->
 				@$el.css
 					left: value
 
-			destroy: ->
+			destroy: (cb = angular.noop)->
 				scope = @scope
 				$el = @$el
 				@hide ->
+					cb()
 					scope.$destroy()
 					$el.remove()
+
+			stopDestroy: ->
+				@$el.stop(true).show("fast")
 
 ngAnnotate.factory "NGAnnotation", ->
 	Annotation = (data)->
@@ -142,8 +147,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 		compile: (tElement, tAttrs, transclude)->
 
 			return ($scope, element, attrs)->
-				activePopups = []
-				activeTooltips = []
+				activePopup = null
+				activeTooltip = null
 
 				# Cache the template when we fetch it
 				popupTemplateData = ""
@@ -168,19 +173,25 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					tooltipTemplateUrl: ""
 				options = angular.extend options, $scope.options
 
-				clearPopups = ->
-					for p in activePopups
-						p.destroy()
-					activePopups = []
+				clearPopup = ->
+					if not activePopup?
+						return
+					tId = activePopup.scope.$annotation.id
+					activePopup.destroy ->
+						if activePopup.scope.$annotation.id is tId
+							activePopup = null
 
-				clearTooltips = ->
-					for i in [activeTooltips.length - 1..0] by -1
-						activeTooltips[i].destroy()
-						activeTooltips.splice i, 1
+				clearTooltip = ->
+					if not activeTooltip?
+						return
+					tId = activeTooltip.scope.$annotation.id
+					activeTooltip.destroy ->
+						if activeTooltip.scope.$annotation.id is tId
+							activeTooltip = null
 
 				$scope.$on "$destroy", ->
-					clearPopups()
-					clearTooltips()
+					clearPopup()
+					clearTooltip()
 
 				if options.popupTemplateUrl
 					$http.get(options.popupTemplateUrl).then (response)->
@@ -262,12 +273,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 						return
 
-					clearPopups()
-					clearTooltips()
+					clearPopup()
+					clearTooltip()
 
 					loadAnnotationPopup annotation, $span, true
 
 				onClick = (event)->
+					debugger;
 					if popupTemplateData.length is 0
 						return
 
@@ -277,15 +289,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					if not targetId?
 						return
 
-					if activePopups.length
-						for p in activePopups
-							if p.scope? and p.scope.$annotation.id is targetId
-								clearPopups()
-								return
+					if activePopup? and activePopup.scope.$annotation.id is targetId
+						clearPopup()
+						return
 					annotation = getAnnotationById $scope.annotations, targetId
 
-					clearPopups()
-					clearTooltips()
+					clearPopup()
+					clearTooltip()
 
 					loadAnnotationPopup annotation, $target, false
 
@@ -297,7 +307,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					$target = angular.element event.target
 					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
-					clearTooltips()
+					if activeTooltip? and activeTooltip.scope.$annotation.id is targetId
+						activeTooltip.stopDestroy()
+						return
+					else
+						clearTooltip()
 
 					if not targetId?
 						return
@@ -305,7 +319,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					annotation = getAnnotationById $scope.annotations, targetId
 
 					# We don't want to show the tooltip if a popup with the annotation is open
-					if activePopups.length
+					if activePopup?
 						return
 
 					tooltip = new NGAnnotateTooltip $rootScope.$new()
@@ -317,7 +331,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
 						return
 
-					activeTooltips.push tooltip
+					activeTooltip = tooltip
 
 					locals = 
 						$scope: tooltip.scope
@@ -346,12 +360,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					if not targetId?
 						return
 
-					clearTooltips()
+					clearTooltip()
 
 				loadAnnotationPopup = (annotation, anchor, isNew)->
 					popup = new NGAnnotatePopup $rootScope.$new()
 					popup.scope.$isNew = isNew
 					popup.scope.$annotation = annotation
+					popup.scope.$readonly = options.readonly
 					popup.$anchor = anchor
 
 					popup.scope.$reject = ->
@@ -359,17 +374,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						
 						if $scope.onAnnotateDelete?
 							$scope.onAnnotateDelete annotation
-
-						clearPopups()
-						popup.destroy()
+						clearPopup()
 						return
 
 					popup.scope.$close = ->
 						if $scope.onAnnotate?
 							$scope.onAnnotate popup.scope.$annotation
-
-						clearPopups()
-						popup.destroy()
+						clearPopup()
 						return
 
 					popup.scope.$reposition = ->
@@ -377,7 +388,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						popup.positionLeft element.offset().left - popup.$el.innerWidth()
 						return
 
-					activePopups.push popup
+					activePopup = popup
 
 					locals = 
 						$scope: popup.scope
@@ -397,21 +408,19 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					popup.scope.$apply()
 					popup.show()
 
-				element.on "mouseover", "span", onMouseEnter
+				element.on "mouseenter", "span", onMouseEnter
 				element.on "mouseleave", "span", onMouseLeave
 
 				element.on "mouseup", (event)->
-					if options.readonly
-						return
 					# We need to determine if the user actually selected something
 					# or if he just clicked on an annotation
 					selection = window.getSelection()
-					if selection.type is "Range"
+					if selection.type is "Range" and !options.readonly
 						# User has selected something
 						onSelect event
 					else if selection.type is "Caret" and event.target.nodeName is "SPAN"
 						onClick event
 					else if selection.type is "Caret"
-						clearTooltips()
-						clearPopups()
+						clearTooltip()
+						clearPopup()
 	}

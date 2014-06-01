@@ -36,6 +36,8 @@ app.controller("MainController", function($scope, $timeout, NGAnnotation)
 
 	$scope.options = {
 		readonly: true,
+		popupTemplateUrl: "partials/annotation.html",
+		popupController: "AnnotationController",
 		tooltipTemplateUrl: "partials/annotation-tooltip.html",
 		tooltipController: "AnnotationController"
 	};
