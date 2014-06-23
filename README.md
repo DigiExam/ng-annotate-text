@@ -26,3 +26,10 @@ Available default type classes are:
 	.yellow - Sets background to yellow, color to black and border-color to yellow. 
 	.teal - Sets background to teal, color to black and border-color to teal.
 
+# License
+
+Licensed under CC-BY-NC
+
+https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc)
+
+Copyright (C) 2014 DigiExam
