@@ -278,8 +278,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					loadAnnotationPopup annotation, $span, true
 
-				onClick = (event)->
-					debugger;
+				onClick = (event)->					
 					if popupTemplateData.length is 0
 						return
 
