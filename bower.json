@@ -14,8 +14,8 @@
   "license": "CC-BY-NC",
   "private": true,
   "main": [
-    "./dist/2.2.0/css/ng-annotate-2.2.0.min.css",
-    "./dist/2.2.0/js/ng-annotate-2.2.0.min.js"
+    "./dist/ng-annotate-latest.min.css",
+    "./dist/ng-annotate-latest.min.js"
   ],
   "ignore": [
     "node_modules",
@@ -25,8 +25,7 @@
     "example-app",
     "dev",
     "/css/",
-    "/js/",
-    "/dist/**/"
+    "/js/"
   ],
   "dependencies": {
     "angular": "~1.2.6"
