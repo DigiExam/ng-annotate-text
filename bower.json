@@ -25,7 +25,8 @@
     "example-app",
     "dev",
     "/css/",
-    "/js/"
+    "/js/",
+    "/dist/**/"
   ],
   "dependencies": {
     "angular": "~1.2.6"

@@ -1,6 +1,6 @@
 module.exports = (grunt) ->
 	# Release
-	distTasks = ["coffee:release", "sass:release", "uglify", "cssmin"]	
+	distTasks = ["coffee:release", "sass:release", "uglify", "cssmin", "copy:release"]	
 
 	# Development
 	defaultTasks = ["coffee:development", "sass:development"]
@@ -42,6 +42,13 @@ module.exports = (grunt) ->
 				src: "<%= sass.release.dest %>"
 				dest: "dist/<%= pkg.version %>/css/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
+		copy:
+			release:
+				files: [
+					{ src: "<%= uglify.release.dest %>", dest: "dist/ng-annotate-latest.min.js" }
+					{ src: "<%= cssmin.release.dest %>", dest: "dist/ng-annotate-latest.min.css" }
+				]
+
 		watch:
 			release:
 				files: ["<%= coffee.release.src %>", "<%= sass.release.src %>"]
@@ -61,6 +68,7 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-sass"
 	grunt.loadNpmTasks "grunt-contrib-cssmin"
 	grunt.loadNpmTasks "grunt-contrib-connect"
+	grunt.loadNpmTasks "grunt-contrib-copy"
 	
 	grunt.registerTask "default", defaultTasks
 	grunt.registerTask "dist", distTasks
