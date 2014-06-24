@@ -24,8 +24,8 @@
     "tests",
     "example-app",
     "dev",
-    "css",
-    "js"
+    "/css/",
+    "/js/"
   ],
   "dependencies": {
     "angular": "~1.2.6"
