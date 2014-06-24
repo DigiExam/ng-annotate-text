@@ -18,13 +18,14 @@
     "./dist/2.1.0/js/ng-annotate-2.1.0.min.js"
   ],
   "ignore": [
-    "**/.*",
     "node_modules",
     "bower_components",
     "test",
     "tests",
     "example-app",
-    "dev"
+    "dev",
+    "css",
+    "js"
   ],
   "dependencies": {
     "angular": "~1.2.6"
