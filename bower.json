@@ -1,6 +1,6 @@
 {
   "name": "ng-annotate",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "homepage": "https://github.com/DigiExam/ng-annotate",
   "authors": [
     "(Rasmus Milesson <rasmus.milesson@arcadelia.com>)",
@@ -14,8 +14,8 @@
   "license": "CC-BY-NC",
   "private": true,
   "main": [
-    "./dist/2.1.0/css/ng-annotate-2.1.0.min.css",
-    "./dist/2.1.0/js/ng-annotate-2.1.0.min.js"
+    "./dist/2.2.0/css/ng-annotate-2.2.0.min.css",
+    "./dist/2.2.0/js/ng-annotate-2.2.0.min.js"
   ],
   "ignore": [
     "node_modules",
