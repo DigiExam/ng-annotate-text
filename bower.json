@@ -1,0 +1,32 @@
+{
+  "name": "ng-annotate",
+  "version": "2.1.0",
+  "homepage": "https://github.com/DigiExam/ng-annotate",
+  "authors": [
+    "(Rasmus Milesson <rasmus.milesson@arcadelia.com>)",
+    "(Robin Andersson <robin.andersson@digiexam.se>)"
+  ],
+  "description": "An AngularJS directive to assist with annotation of text",
+  "keywords": [
+    "angularjs",
+    "annotation"
+  ],
+  "license": "CC-BY-NC",
+  "private": true,
+  "main": [
+    "./dist/2.1.0/css/ng-annotate-2.1.0.min.css",
+    "./dist/2.1.0/js/ng-annotate-2.1.0.min.js"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "example-app",
+    "dev"
+  ],
+  "dependencies": {
+    "angular": "~1.2.6"
+  }
+}
