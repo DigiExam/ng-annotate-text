@@ -5,7 +5,7 @@
 }
 
 h1 {
-	margin-top: 50px;
+	margin-top: 80px;
 	margin-bottom: 10px;
 	font-family: Georgia;
 }
@@ -25,4 +25,27 @@ h3 {
 .ng-annotation-popup textarea,
 .ng-annotation-popup input {
 	margin-bottom: 10px;
+}
+
+.template-button {
+	width: 40px;
+	height: 40px;
+	background-color: #F3F3F3;
+	border: 0px solid;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 12px;
+	border-radius: 5px;
+	margin-right: 10px;
+}
+
+.template-button.red { color: #000; background: #fcbcbc; border-color: #fcbcbc; }
+.template-button.green { color: #000; background: #c7fcbc; border-color: #c7fcbc; }
+.template-button.blue { color: #000; background: #BCDFFC; border-color: #BCDFFC; }
+.template-button.pink { color: #000; background: #fcbcfa; border-color: #fcbcfa; }
+.template-button.yellow { color: #000; background: #fafcbc; border-color: #fafcbc; }
+.template-button.aqua { color: #000; background: #bcfcf7; border-color: #bcfcf7; }
+
+.summary li {
+	line-height: 24px;
 }

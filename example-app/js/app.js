@@ -11,6 +11,43 @@ app.controller("AnnotationController", function($scope, $timeout)
 		{ name: "Aqua", value: "aqua" }
 	];
 
+	$scope.templates = [
+		{
+			type: "red",
+			comment: "Grammar mistake",
+			points: -1
+		},
+		{
+			type: "aqua",
+			comment: "Spelling mistake",
+			points: -1
+		}
+	];
+
+	$scope.getTemplateAbbr = function(template, index) {
+		if (template.comment != null && 1 < template.comment.length) {
+			return template.comment.substring(0, 2);
+		} else {
+			return index;
+		}
+	}
+
+	$scope.useTemplate = function(template) {
+		if (template.type != null) {
+			$scope.$annotation.type = template.type;
+		}
+
+		if (template.comment != null) {
+			$scope.$annotation.data.comment = template.comment;
+		}
+
+		if (template.points !== null) {
+			$scope.$annotation.data.points = template.points;
+		}
+
+		$scope.$close();
+	}
+
 	$scope.close = function()
 	{
 		$scope.$close();

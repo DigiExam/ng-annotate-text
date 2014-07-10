@@ -30,7 +30,7 @@
 
 				<div style="padding: 0 50px">
 					<h3 class="mt-large">Annotation summary</h3>
-					<ul>
+					<ul class="summary">
 						<li ng-repeat="a in annotationsAsFlatList()">{{a.data.comment}} <span ng-if="a.data.points">({{a.data.points}} points)</span></li>
 					</ul>
 				</div>
