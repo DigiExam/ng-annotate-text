@@ -1,6 +1,7 @@
 .row p {
 	white-space: pre-wrap;
 	position: relative;
+	padding: 0 10px;
 }
 
 h1 {

@@ -28,10 +28,12 @@
 					text="t">
 				</ng-annotate>
 
-				<h3 class="mt-large">Annotation summary</h3>
-				<ul>
-					<li ng-repeat="a in annotationsAsFlatList()">{{a.data.comment}} <span ng-if="a.data.points">({{a.data.points}} points)</span></li>
-				</ul>
+				<div style="padding: 0 10px">
+					<h3 class="mt-large">Annotation summary</h3>
+					<ul>
+						<li ng-repeat="a in annotationsAsFlatList()">{{a.data.comment}} <span ng-if="a.data.points">({{a.data.points}} points)</span></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 
