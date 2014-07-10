@@ -145,6 +145,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 		template: "<p ng-bind-html=\"content\"></p>"
 		replace: true
 		compile: (tElement, tAttrs, transclude)->
+			LEFT_MARGIN = -10
 
 			return ($scope, element, attrs)->
 				activePopup = null
@@ -327,7 +328,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					tooltip.scope.$reposition = ->
 						tooltip.positionTop()
-						tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
+						tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth() + LEFT_MARGIN
 						return
 
 					activeTooltip = tooltip
@@ -346,7 +347,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					$compile(tooltip.$el) tooltip.scope
 					tooltip.positionTop()
-					tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth()
+					tooltip.positionLeft element.offset().left - tooltip.$el.innerWidth() + LEFT_MARGIN
 					tooltip.scope.$apply()
 					tooltip.show()
 
@@ -384,7 +385,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					popup.scope.$reposition = ->
 						popup.positionTop()
-						popup.positionLeft element.offset().left - popup.$el.innerWidth()
+						popup.positionLeft element.offset().left - popup.$el.innerWidth() + LEFT_MARGIN
 						return
 
 					activePopup = popup
@@ -403,7 +404,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					$compile(popup.$el) popup.scope
 					popup.positionTop()
-					popup.positionLeft element.offset().left - popup.$el.innerWidth()
+					popup.positionLeft element.offset().left - popup.$el.innerWidth() + LEFT_MARGIN
 					popup.scope.$apply()
 					popup.show()
 
