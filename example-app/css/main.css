@@ -16,6 +16,11 @@ h2 {
 	margin-bottom: 20px;
 }
 
+h3 {
+	margin-top: 30px;
+	font-size: 18px;
+}
+
 .ng-annotation-popup textarea,
 .ng-annotation-popup input {
 	margin-bottom: 10px;

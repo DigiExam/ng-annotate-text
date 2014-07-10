@@ -27,8 +27,14 @@
 					on-annotate-error="onAnnotateError"
 					text="t">
 				</ng-annotate>
+
+				<h3 class="mt-large">Annotation summary</h3>
+				<ul>
+					<li ng-repeat="a in annotationsAsFlatList()">{{a.data.comment}} <span ng-if="a.data.points">({{a.data.points}} points)</span></li>
+				</ul>
 			</div>
 		</div>
+
 	</div>
 	<script src="./js/app.js" type="text/javascript"></script>
 </body>
