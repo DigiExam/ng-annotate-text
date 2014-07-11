@@ -220,9 +220,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 				createAnnotation = ->
 					annotation = new NGAnnotation()
 					sel = window.getSelection()
-					if sel.type isnt "Range"
+
+					if sel.isCollapsed
 						throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
+
 					range = sel.getRangeAt 0
+					
 					if range.startContainer isnt range.endContainer
 						throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
 
@@ -415,12 +418,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					# We need to determine if the user actually selected something
 					# or if he just clicked on an annotation
 					selection = window.getSelection()
-					if selection.type is "Range" and !options.readonly
+					if !selection.isCollapsed and !options.readonly
 						# User has selected something
 						onSelect event
-					else if selection.type is "Caret" and event.target.nodeName is "SPAN"
+					else if selection.isCollapsed and event.target.nodeName is "SPAN"
 						onClick event
-					else if selection.type is "Caret"
+					else if selection.isCollapsed
 						clearTooltip()
 						clearPopup()
 	}
