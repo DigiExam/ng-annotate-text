@@ -79,7 +79,8 @@ app.controller("MainController", function($scope, $timeout, NGAnnotation)
 
 	$scope.onAnnotate = function($annotation)
 	{
-		console.log($annotation);
+		if console.log
+			console.log($annotation);
 	};
 
 	$scope.onAnnotateError = function($ex)
