@@ -225,12 +225,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
 
 					range = sel.getRangeAt 0
-					
+
 					if range.startContainer isnt range.endContainer
 						throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
 
-					if range.startContainer.parentElement.nodeName is "SPAN" # Is a child annotation
-						parentId = if (attrId = range.startContainer.parentElement.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+					if range.startContainer.parentNode.nodeName is "SPAN" # Is a child annotation
+						parentId = if (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
 						if parentId is undefined
 							throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
 						parentAnnotation = getAnnotationById $scope.annotations, parentId
@@ -261,7 +261,16 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						annotation.endIndex = range.endOffset
 
 					annotationParentCollection.push annotation
+					clearSelection()
 					return annotation
+
+				clearSelection = ->
+					if document.selection
+						document.selection.empty() # Internet Explorer
+					else if window.getSelection and window.getSelection().empty
+						window.getSelection().empty() # Chrome
+					else if window.getSelection and window.getSelection().removeAllRanges
+						window.getSelection().removeAllRanges() # Firefox
 
 				onSelect = (event)->
 					if popupTemplateData.length is 0
