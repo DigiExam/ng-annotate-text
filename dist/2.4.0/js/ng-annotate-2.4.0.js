@@ -479,7 +479,7 @@
               var leftPos, paddingLeft;
               popup.positionTop();
               paddingLeft = parseInt(element.css("padding-left"));
-              leftPos = element.offset().left + paddingLeft - tooltip.$el.innerWidth() + LEFT_MARGIN;
+              leftPos = element.offset().left + paddingLeft - popup.$el.innerWidth() + LEFT_MARGIN;
               if (leftPos < 0) {
                 leftPos = 0;
               }
