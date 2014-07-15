@@ -21,7 +21,7 @@ parseAnnotations = (text, annotations = [], indexOffset = 0)->
 		text = insertAt text, annotation.endIndex + indexOffset, "</span>"
 		if annotation.children.length
 			text = parseAnnotations text, annotation.children, annotation.startIndex + indexOffset
-		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " " + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
+		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " ng-annotation-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
 getAnnotationById = (annotations, aId)->
