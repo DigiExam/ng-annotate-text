@@ -341,7 +341,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					tooltip.scope.$reposition = ->
 						tooltip.positionTop()
 						paddingLeft = parseInt(element.css("padding-left"))
-						tooltip.positionLeft element.offset().left + paddingLeft - tooltip.$el.innerWidth() + LEFT_MARGIN
+
+						leftPos = element.offset().left + paddingLeft - tooltip.$el.innerWidth() + LEFT_MARGIN
+
+						if leftPos < 0
+							leftPos = 0
+
+						tooltip.positionLeft leftPos
 						return
 
 					activeTooltip = tooltip
@@ -398,7 +404,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					popup.scope.$reposition = ->
 						popup.positionTop()
 						paddingLeft = parseInt(element.css("padding-left"))
-						popup.positionLeft element.offset().left + paddingLeft - popup.$el.innerWidth() + LEFT_MARGIN
+
+						leftPos = element.offset().left + paddingLeft - tooltip.$el.innerWidth() + LEFT_MARGIN
+
+						if leftPos < 0
+							leftPos = 0
+
+						popup.positionLeft leftPos
 						return
 
 					activePopup = popup
