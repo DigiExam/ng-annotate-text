@@ -39,6 +39,16 @@ angular.module("app", ["ngAnnotate"])
 			$scope.$close();
 		};
 
+		$scope.useColor = function(color) {
+			if (color.value != null) {
+				$scope.$annotation.type = color.value;
+			}
+		};
+
+		$scope.isActiveColor = function(color) {
+			return color && color.value === $scope.$annotation.type;
+		};
+
 		$scope.close = function() {
 			$scope.$close();
 		};

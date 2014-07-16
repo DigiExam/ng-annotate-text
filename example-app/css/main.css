@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 header {
 	margin: 10% 0;
 }
@@ -32,22 +38,46 @@ label {
 	margin-bottom: 10px;
 }
 
-.template-list li + li {
+.list-colors li {
+	float: left;
+	width: 30px;
+}
+
+.list-colors li + li {
+	margin-left: 5px;
+}
+
+.list-templates li + li {
 	margin-top: 5px;
 }
 
-.template-button {
+.swatch {
+	transition: border-color 0.15s;
 	display: block;
 	width: 100%;
-	background-color: #f3f3f3;
-	border: 0;
-	border-radius: 5px;
-	text-align: left;
+	border-radius: 3px;
+	border: 1px solid hsla(0, 0%, 0%, 0.075);
+	outline: 0;
 }
 
-.template-button.red { color: #000; background: #fcbcbc; }
-.template-button.green { color: #000; background: #c7fcbc; }
-.template-button.blue { color: #000; background: #bcdffc; }
-.template-button.pink { color: #000; background: #fcbcfa; }
-.template-button.yellow { color: #000; background: #fafcbc; }
-.template-button.aqua { color: #000; background: #bcfcf7; }
+.swatch:hover,
+.swatch:focus {
+	border-color: hsla(0, 0%, 0%, 0.3);
+}
+
+.swatch.active {
+	border-color: hsla(0, 0%, 0%, 0.5);
+}
+
+.swatch-color {
+	padding: 0;
+	text-indent: -9999px;
+	overflow: hidden;
+}
+
+.swatch.red { color: #000; background: #fcbcbc; }
+.swatch.green { color: #000; background: #c7fcbc; }
+.swatch.blue { color: #000; background: #bcdffc; }
+.swatch.pink { color: #000; background: #fcbcfa; }
+.swatch.yellow { color: #000; background: #fafcbc; }
+.swatch.aqua { color: #000; background: #bcfcf7; }
