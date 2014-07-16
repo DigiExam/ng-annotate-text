@@ -113,7 +113,7 @@ angular.module("app", ["ngAnnotate"])
 			for (var i = 0; i < source.length; i++) {
 				var a = source[i];
 
-				if (a.data.points != null || a.data.comment != null) {
+				if (a.data.points != null && a.data.points != 0 || a.data.comment != null) {
 					annotations.push(a);
 				}
 

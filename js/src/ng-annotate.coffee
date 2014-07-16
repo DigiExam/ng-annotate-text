@@ -127,7 +127,7 @@ ngAnnotate.factory "NGAnnotation", ->
 			id: new Date().getTime(),
 			startIndex: null
 			endIndex: null
-			data: {}
+			data: {points: 0}
 			type: ""
 			children: []
 
