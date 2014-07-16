@@ -7,66 +7,14 @@ $colors: (
 	'aqua': #bcfcf7
 );
 
-.ng-annotation {
-	border-bottom: 1px solid #000;
-	cursor: pointer;
-}
-
 @each $type, $color in $colors {
 	.ng-annotation-type-#{$type} { color: #000; background: $color; border-color: $color; }
 }
 .ng-annotation-type-strike { text-decoration: line-through; }
 
-.ng-annotation-popup {
-	width: 225px;
-	position: absolute;
-	z-index: 1000;
-	background: #fff;
-	box-shadow: 0 0 10px #777;
-	display: none;
-	padding: 10px;
-
-	label {
-		display: block;
-	}
-
-	&:after {
-		content: "";
-		width: 10px;
-		height: 10px;
-		position: absolute;
-		background: #fff;
-		transform: rotate(45deg);
-		right: -6px;
-		top: 50%;
-		margin-top: -5px;
-		z-index: 990;
-		border-top: 1px solid #ccc;
-		border-right: 1px solid #ccc;
-	}
-}
-
+.ng-annotation-popup,
 .ng-annotation-tooltip {
-	width: 225px;
+	display: none;
 	position: absolute;
 	z-index: 1000;
-	background: #fff;
-	box-shadow: 0 0 10px #777;
-	display: none;
-	padding: 10px;
-
-	&:after {
-		content: "";
-		width: 10px;
-		height: 10px;
-		position: absolute;
-		background: #fff;
-		transform: rotate(45deg);
-		right: -6px;
-		top: 50%;
-		margin-top: -5px;
-		z-index: 990;
-		border-top: 1px solid #ccc;
-		border-right: 1px solid #ccc;
-	}
 }

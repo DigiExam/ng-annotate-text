@@ -85,3 +85,44 @@ label {
 .text-center {
 	text-align: center;
 }
+
+/* ng-annotate theme */
+
+.ng-annotation {
+	border-bottom: 1px solid #000;
+	cursor: pointer;
+}
+
+.ng-annotation-popup,
+.ng-annotation-tooltip {
+	width: 227px;
+	padding: 10px;
+	background: #FFF;
+	border: 1px solid hsla(0, 0%, 0%, 0.18);
+	border-radius: 5px;
+	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.2);
+}
+
+	.ng-annotation-popup label,
+	.ng-annotation-tooltip label {
+		display: block;
+	}
+
+	.ng-annotation-popup::after,
+	.ng-annotation-tooltip::after {
+		content: "";
+		-webkit-transform: rotate(45deg);
+		-moz-transform: rotate(45deg);
+		transform: rotate(45deg);
+		position: absolute;
+		right: -6px;
+		top: 50%;
+		z-index: 990;
+		width: 10px;
+		height: 10px;
+		margin-top: -5px;
+		background: #fff;
+		border-top: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+		box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.11);
+	}
