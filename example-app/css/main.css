@@ -81,3 +81,7 @@ label {
 .swatch.pink { color: #000; background: #fcbcfa; }
 .swatch.yellow { color: #000; background: #fafcbc; }
 .swatch.aqua { color: #000; background: #bcfcf7; }
+
+.text-center {
+	text-align: center;
+}
