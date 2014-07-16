@@ -1,10 +1,10 @@
 $colors: (
-  red: #fcbcbc,
-  green: #c7fcbc,
-  blue: #bcdffc,
-  pink: #fcbcfa,
-  yellow: #fafcbc,
-  aqua: #bcfcf7
+	red: #fcbcbc,
+	green: #c7fcbc,
+	blue: #bcdffc,
+	pink: #fcbcfa,
+	yellow: #fafcbc,
+	aqua: #bcfcf7
 );
 
 .text-center {
@@ -17,7 +17,7 @@ $colors: (
 }
 
 @each $type, $color in $colors {
-  .ng-annotation-type-#{$type} { color: #000; background: $color; border-color: $color; }
+	.ng-annotation-type-#{$type} { color: #000; background: $color; border-color: $color; }
 }
 .ng-annotation-type-strike { text-decoration: line-through; }
 
@@ -30,25 +30,25 @@ $colors: (
 	display: none;
 	padding: 10px;
 
-  label {
-    display: block;
-  }
+	label {
+		display: block;
+	}
 
-  &:after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    background: #fff;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    right: -6px;
-    top: 50%;
-    margin-top: -5px;
-    z-index: 990;
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-  }
+	&:after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		position: absolute;
+		background: #fff;
+		transform: rotate(45deg);
+		-webkit-transform: rotate(45deg);
+		right: -6px;
+		top: 50%;
+		margin-top: -5px;
+		z-index: 990;
+		border-top: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+	}
 }
 
 .ng-annotation-tooltip {
@@ -60,19 +60,19 @@ $colors: (
 	display: none;
 	padding: 10px;
 
-  &:after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    background: #fff;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    right: -6px;
-    top: 50%;
-    margin-top: -5px;
-    z-index: 990;
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-  }
+	&:after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		position: absolute;
+		background: #fff;
+		transform: rotate(45deg);
+		-webkit-transform: rotate(45deg);
+		right: -6px;
+		top: 50%;
+		margin-top: -5px;
+		z-index: 990;
+		border-top: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+	}
 }
