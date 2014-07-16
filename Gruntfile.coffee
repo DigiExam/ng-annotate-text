@@ -5,7 +5,7 @@ module.exports = (grunt) ->
 	# Development
 	defaultTasks = ["coffee:development", "sass:development", "autoprefixer:development"]
 	watchTasks = defaultTasks
-	serveTasks = ["connect", "coffee:development", "sass:development", "watch"]
+	serveTasks = ["connect", "watch"]
 
 	grunt.initConfig
 		pkg: grunt.file.readJSON "package.json"
@@ -63,6 +63,8 @@ module.exports = (grunt) ->
 				]
 
 		watch:
+			options:
+				atBegin: true
 			release:
 				files: ["<%= coffee.release.src %>", "<%= sass.release.src %>"]
 				tasks: watchTasks
