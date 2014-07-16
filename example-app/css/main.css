@@ -126,3 +126,17 @@ label {
 		border-right: 1px solid #ccc;
 		box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.11);
 	}
+
+	.ng-annotate-popup-points {
+		display: table;
+		margin-bottom: 0;
+	}
+	
+	.ng-annotate-popup-points label,
+	.ng-annotate-popup-points input {
+		display: table-cell;
+	}
+	
+	.ng-annotate-popup-points label {
+		padding-right: 10px;
+	}
