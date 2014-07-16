@@ -4,7 +4,8 @@
   "homepage": "https://github.com/DigiExam/ng-annotate",
   "authors": [
     "(Rasmus Milesson <rasmus.milesson@arcadelia.com>)",
-    "(Robin Andersson <robin.andersson@digiexam.se>)"
+    "(Robin Andersson <robin.andersson@digiexam.se>)",
+    "(Kenneth Sundqvist <kenneth.sundqvist@digiexam.se>)"
   ],
   "description": "An AngularJS directive to assist with annotation of text",
   "keywords": [
