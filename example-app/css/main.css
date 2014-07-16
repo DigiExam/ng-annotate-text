@@ -14,6 +14,10 @@ h1 {
 	font-family: Georgia, serif;
 }
 
+label {
+	cursor: pointer;
+}
+
 .container {
 	max-width: 45em;
 }
