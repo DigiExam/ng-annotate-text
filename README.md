@@ -21,6 +21,8 @@ ng-annotate is a library to annotate texts in AngularJS.
 
 Chrome, Firefox, Safari and IE9+
 
+Autoprefixer rule: last 2 versions, ie >= 9, Firefox ESR
+
 ## Annotation colors
 
 Main annotation class is `.ng-annotation`.

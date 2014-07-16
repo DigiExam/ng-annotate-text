@@ -1,9 +1,9 @@
 module.exports = (grunt) ->
 	# Release
-	distTasks = ["coffee:release", "sass:release", "uglify", "cssmin", "copy:release"]	
+	distTasks = ["coffee:release", "sass:release", "autoprefixer:release", "uglify", "cssmin", "copy:release"]
 
 	# Development
-	defaultTasks = ["coffee:development", "sass:development"]
+	defaultTasks = ["coffee:development", "sass:development", "autoprefixer:development"]
 	watchTasks = defaultTasks
 	serveTasks = ["connect", "coffee:development", "sass:development", "watch"]
 
@@ -13,7 +13,7 @@ module.exports = (grunt) ->
 		coffee:
 			#options:
 				#sourceMap: true
-			release: 
+			release:
 				src: ["js/src/ng-annotate.coffee"]
 				dest: "dist/<%= pkg.version %>/js/<%= pkg.name %>-<%= pkg.version %>.js"
 
@@ -29,6 +29,19 @@ module.exports = (grunt) ->
 			development:
 				src: ["css/src/ng-annotate.scss"]
 				dest: "dev/<%= pkg.name %>-unstable.css"
+
+		autoprefixer:
+			options:
+				browsers: [
+					"last 2 versions"
+					"ie >= 9"
+					"Firefox ESR"
+				]
+			release:
+				src: ["<%= sass.release.dest %>"]
+
+			development:
+				src: ["<%= sass.development.dest %>"]
 
 		uglify:
 			options:
@@ -54,14 +67,13 @@ module.exports = (grunt) ->
 				files: ["<%= coffee.release.src %>", "<%= sass.release.src %>"]
 				tasks: watchTasks
 
-		connect:		
+		connect:
 			server:
 				options:
 					port: 3000
 					hostname: "localhost"
 					open: "http://localhost:3000/example-app/"
 
-	
 	grunt.loadNpmTasks "grunt-contrib-uglify"
 	grunt.loadNpmTasks "grunt-contrib-coffee"
 	grunt.loadNpmTasks "grunt-contrib-watch"
@@ -69,7 +81,8 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-cssmin"
 	grunt.loadNpmTasks "grunt-contrib-connect"
 	grunt.loadNpmTasks "grunt-contrib-copy"
-	
+	grunt.loadNpmTasks "grunt-autoprefixer"
+
 	grunt.registerTask "default", defaultTasks
 	grunt.registerTask "dist", distTasks
 	grunt.registerTask "serve", serveTasks
