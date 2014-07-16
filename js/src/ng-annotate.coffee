@@ -99,11 +99,11 @@ ngAnnotate.factory "NGAnnotateTooltip", ->
 				anchorHeight = @$anchor.innerHeight()
 				tooltipHeight = @$el.innerHeight()
 				@$el.css
-					top: anchorOffsetTop + (anchorHeight / 2) - (tooltipHeight / 2)
+					top: Math.round anchorOffsetTop + (anchorHeight / 2) - (tooltipHeight / 2)
 
 			positionLeft: (value)->
 				@$el.css
-					left: value
+					left: Math.round value
 
 			destroy: (cb = angular.noop)->
 				scope = @scope
