@@ -3,3 +3,4 @@
 *.sublime-*
 node_modules/
 dev/
+.idea/
