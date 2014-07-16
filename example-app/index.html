@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html ng-app="app">
 <head>
-	<title>ng-annotate</title>
-	<meta charset="utf-8"> 
-	<link href="./css/lib/bootstrap.min.css" rel="stylesheet" type="text/css">
-	<link href="./css/lib/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
-	<link href="../dev/ng-annotate-unstable.css" rel="stylesheet" type="text/css">
-	<link href="./css/main.css" rel="stylesheet" type="text/css">
-	<script src="./js/lib/jquery-1.11.0.min.js" type="text/javascript"></script>
-	<script src="./js/lib/angular.js" type="text/javascript"></script>
-	<script src="../dev/ng-annotate-unstable.js" type="text/javascript"></script>
+	<title>ng-annotate demo</title>
+	<meta charset="utf-8">
+
+	<!-- Demo dependencies -->
+	<link href="css/lib/bootstrap.min.css" rel="stylesheet" />
+	<link href="css/lib/bootstrap-theme.min.css" rel="stylesheet" />
+	<link href="css/main.css" rel="stylesheet" />
+	<script src="js/lib/jquery-1.11.0.min.js"></script>
+	<script src="js/lib/angular.js"></script>
+
+	<!-- ng-annotate -->
+	<link href="../dev/ng-annotate-unstable.css" rel="stylesheet" />
+	<script src="../dev/ng-annotate-unstable.js"></script>
+
 </head>
 <body>
-	<div class="container" ng-controller="MainController">
-		<div class="row">
-			<div class="col-lg-12 text-center">
-				<h1>Test Application - Annotate Text</h1>
-				<h2>Using ng-annotage to annotate text by selecting it</h2>
-			</div>
-		</div>
-		<div class="row" ng-repeat="t in texts">
-			<div style="width: 700px; margin: 0 auto;">
-				<ng-annotate options="options"
-					annotations="annotations[$index]"
-					on-annotate="onAnnotate"
-					on-annotate-error="onAnnotateError"
-					text="t">
-				</ng-annotate>
 
-				<div style="padding: 0 50px">
-					<h3 class="mt-large">Annotation summary</h3>
-					<ul class="summary">
-						<li ng-repeat="a in annotationsAsFlatList()">{{a.data.comment}} <span ng-if="a.data.points">({{a.data.points}} points)</span></li>
-					</ul>
-				</div>
-			</div>
-		</div>
+	<article class="container" ng-controller="MainController">
 
-	</div>
-	<script src="./js/app.js" type="text/javascript"></script>
+		<header class="text-center">
+			<h1>ng-annotate demo</h1>
+			<p>Select text to create annotations.</p>
+			<p><a href="https://github.com/DigiExam/ng-annotate">ng-annotate on GitHub</a></p>
+		</header>
+
+		<section ng-repeat="text in demoTexts">
+			<ng-annotate
+				options="options"
+				annotations="annotations[$index]"
+				on-annotate="onAnnotate"
+				on-annotate-error="onAnnotateError"
+				text="text">
+			</ng-annotate>
+
+			<h2>Annotation summary</h2>
+			<ul>
+				<li ng-repeat="a in annotationsAsFlatList()">
+					{{a.data.comment}}
+					<span ng-if="a.data.points">({{a.data.points}} points)</span>
+				</li>
+			</ul>
+		</section>
+
+	</article>
+
+	<script src="js/app.js"></script>
+
 </body>
 </html>
