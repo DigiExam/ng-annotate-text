@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
 	# Development
 	defaultTasks = ["coffee:development", "sass:development"]
-	watchTasks = ["coffee:development", "sass:development"]
+	watchTasks = defaultTasks
 	serveTasks = ["connect", "coffee:development", "sass:development", "watch"]
 
 	grunt.initConfig
