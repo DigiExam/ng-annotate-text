@@ -22,26 +22,32 @@ label {
 	max-width: 45em;
 }
 
+.form-group-title {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
 .ng-annotation-popup textarea,
 .ng-annotation-popup input {
 	margin-bottom: 10px;
 }
 
-.template-button {
-	width: 40px;
-	height: 40px;
-	background-color: #F3F3F3;
-	border: 0 solid;
-	text-transform: uppercase;
-	text-align: center;
-	font-size: 12px;
-	border-radius: 5px;
-	margin-right: 10px;
+.template-list li + li {
+	margin-top: 5px;
 }
 
-.template-button.red { color: #000; background: #fcbcbc; border-color: #fcbcbc; }
-.template-button.green { color: #000; background: #c7fcbc; border-color: #c7fcbc; }
-.template-button.blue { color: #000; background: #BCDFFC; border-color: #BCDFFC; }
-.template-button.pink { color: #000; background: #fcbcfa; border-color: #fcbcfa; }
-.template-button.yellow { color: #000; background: #fafcbc; border-color: #fafcbc; }
-.template-button.aqua { color: #000; background: #bcfcf7; border-color: #bcfcf7; }
+.template-button {
+	display: block;
+	width: 100%;
+	background-color: #f3f3f3;
+	border: 0;
+	border-radius: 5px;
+	text-align: left;
+}
+
+.template-button.red { color: #000; background: #fcbcbc; }
+.template-button.green { color: #000; background: #c7fcbc; }
+.template-button.blue { color: #000; background: #bcdffc; }
+.template-button.pink { color: #000; background: #fcbcfa; }
+.template-button.yellow { color: #000; background: #fafcbc; }
+.template-button.aqua { color: #000; background: #bcfcf7; }

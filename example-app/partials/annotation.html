@@ -30,13 +30,18 @@
 </div>
 
 <div class="form-group" ng-if="!$readonly">
-	<button
-			class="template-button"
-			ng-class="template.type"
-			ng-repeat="template in templates"
-			ng-click="useTemplate(template)">
-		{{getTemplateAbbr(template)}}
-	</button>
+	<div class="form-group-title">Predefined</div>
+	<ul class="list-unstyled template-list">
+		<li ng-repeat="template in templates">
+			<button
+					class="template-button"
+					ng-class="template.type"
+					ng-click="useTemplate(template)">
+				<span class="pull-left">{{template.comment}}</span>
+				<span class="pull-right">{{template.points}}</span>
+			</button>
+		</li>
+	</ul>
 </div>
 
 <div ng-if="!$readonly">
