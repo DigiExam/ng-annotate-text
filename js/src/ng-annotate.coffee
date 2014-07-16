@@ -43,9 +43,13 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 
 			show: (cb = angular.noop, speed = "fast")->
 				@$el.fadeIn speed, cb
+				if typeof scope.onEditorShow is "function"
+					scope.onEditorShow @$el
 
 			hide: (cb = angular.noop, speed = "fast")->
 				@$el.fadeOut speed, cb
+				if typeof scope.onEditorHide is "function"
+					scope.onEditorHide @$el
 
 			isVisible: ->
 				return @$el.is ":visible"
@@ -142,6 +146,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			onAnnotate: "="
 			onAnnotateDelete: "="
 			onAnnotateError: "="
+			onEditorShow: "="
+			onEditorHide: "="
 		template: "<p ng-bind-html=\"content\"></p>"
 		replace: true
 		compile: (tElement, tAttrs, transclude)->
@@ -386,6 +392,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					popup.scope.$annotation = annotation
 					popup.scope.$readonly = options.readonly
 					popup.$anchor = anchor
+					popup.scope.onEditorShow = $scope.onEditorShow
+					popup.scope.onEditorHide = $scope.onEditorHide
 
 					popup.scope.$reject = ->
 						removeAnnotation annotation.id, $scope.annotations
