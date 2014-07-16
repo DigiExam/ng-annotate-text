@@ -10,12 +10,12 @@ ng-annotate is a library to annotate texts in AngularJS.
 
 ## Getting started with development
 
-- Install NodeJS
-- Run **npm install -g grunt-cli**
-- Run **npm install** in the ng-annotate folder
-- Run **grunt serve** 
-
-**grunt serve** will launch the example application which also currently also is the only use documentation.
+1. Install NodeJS ([nodejs.org](http://nodejs.org/))
+2. Install Grunt globally: `npm install -g grunt-cli`
+3. Fork the repo and clone it. ([How to do it with GitHub.](https://help.github.com/articles/fork-a-repo))
+4. Go into the project folder: `cd ng-annotate`
+5. Install the project dependencies: `npm install`
+6. Build the project files and run the example application: `grunt serve` 
 
 ## Browser compatability
 
