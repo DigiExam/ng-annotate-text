@@ -7,13 +7,11 @@ $colors: (
   aqua: #bcfcf7
 );
 
-.text-center
-{
+.text-center {
 	text-align: center;
 }
 
-.ng-annotation
-{
+.ng-annotation {
 	border-bottom: 1px solid #000;
 	cursor: pointer;
 }
@@ -23,8 +21,7 @@ $colors: (
 }
 .ng-annotation-type-strike { text-decoration: line-through; }
 
-.ng-annotation-popup
-{
+.ng-annotation-popup {
 	width: 225px;
 	position: absolute;
 	z-index: 1000;
@@ -33,13 +30,11 @@ $colors: (
 	display: none;
 	padding: 10px;
 
-  label
-  {
+  label {
     display: block;
   }
 
-  &:after
-  {
+  &:after {
     content: "";
     width: 10px;
     height: 10px;
@@ -56,8 +51,7 @@ $colors: (
   }
 }
 
-.ng-annotation-tooltip
-{
+.ng-annotation-tooltip {
 	width: 225px;
 	position: absolute;
 	z-index: 1000;
@@ -66,8 +60,7 @@ $colors: (
 	display: none;
 	padding: 10px;
 
-  &:after
-  {
+  &:after {
     content: "";
     width: 10px;
     height: 10px;
