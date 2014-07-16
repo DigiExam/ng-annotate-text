@@ -97,6 +97,12 @@ angular.module("app", ["ngAnnotate"])
 			}
 		};
 
+		$scope.onEditorShow = function($el) {
+			// Focus the first input or textarea
+			var firstInput = $el.find("input, textarea").eq(0).focus();
+			firstInput && firstInput[0].select();
+		};
+
 		$scope.annotationsAsFlatList = function(source) {
 			var annotations = [];
 
