@@ -1,15 +1,14 @@
-ng-annotate
-=========================
+# ng-annotate
 
 ng-annotate is a library to annotate texts in AngularJS.
 
 ![Screenshot](http://i.imgur.com/IHjxXn1.png?1)
 
-# Demo
+## Demo
 
 To try a demo, go to: http://blog.digiexam.se/annotate-test/
 
-# Getting started with development
+## Getting started with development
 
 - Install NodeJS
 - Run **npm install -g grunt-cli**
@@ -18,11 +17,11 @@ To try a demo, go to: http://blog.digiexam.se/annotate-test/
 
 **grunt serve** will launch the example application which also currently also is the only use documentation.
 
-# Browser compatability
+## Browser compatability
 
 Chrome, Firefox, Safari and IE9+
 
-# Annotation colors
+## Annotation colors
 
 Main annotation class is `.ng-annotation`.
 An annotation is extended by adding a type class to `.ng-annotation`.
@@ -36,7 +35,7 @@ Available default type classes are:
 	.ng-annotation-type-yellow - Sets background to yellow, color to black and border-color to yellow. 
 	.ng-annotation-type-aqua - Sets background to aqua, color to black and border-color to aqua.
 
-# License
+## License
 
 Licensed under CC-BY-NC
 
