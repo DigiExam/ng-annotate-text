@@ -183,11 +183,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 							activePopup = null
 
 				clearTooltip = ->
-					if not activeTooltip?
+					tooltip = activeTooltip
+					if not tooltip?
 						return
-					tId = activeTooltip.scope.$annotation.id
-					activeTooltip.destroy ->
-						if activeTooltip.scope.$annotation.id is tId
+					tooltip.destroy ->
+						if activeTooltip is tooltip
 							activeTooltip = null
 
 				$scope.$on "$destroy", ->
