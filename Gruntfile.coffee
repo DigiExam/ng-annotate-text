@@ -45,6 +45,7 @@ module.exports = (grunt) ->
 
 		uglify:
 			options:
+				# Mangle will shorten variable names which breaks the AngularJS dependency injection.
 				mangle: false
 			release:
 				src: "<%= coffee.release.dest %>"
