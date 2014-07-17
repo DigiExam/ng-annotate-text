@@ -34,7 +34,7 @@ module.exports = (grunt) ->
 					"Firefox ESR"
 				]
 			main:
-				src: "<%= sass.main.src %>"
+				src: "<%= sass.main.dest %>"
 
 		uglify:
 			options:
