@@ -20,8 +20,6 @@ Autoprefixer rule: last 2 versions, ie >= 9, Firefox ESR
 
 ## License
 
-Licensed under CC-BY-NC
-
-https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc)
+Licensed under [CC-BY-NC](https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc))
 
 Copyright (C) 2014 DigiExam
