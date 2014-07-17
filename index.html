@@ -1,0 +1,56 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+	<title>ng-annotate demo</title>
+	<meta charset="utf-8">
+
+	<!-- ng-annotate -->
+	<link href="lib/ng-annotate/css/ng-annotate-latest.min.css" rel="stylesheet" />
+
+	<!-- demo -->
+	<link href="dist/main.css" rel="stylesheet" />
+
+</head>
+<body>
+
+	<article class="container" ng-controller="MainController">
+
+		<header class="text-center">
+			<h1>ng-annotate demo</h1>
+			<p>Select text to create annotations.</p>
+			<p><a href="https://github.com/DigiExam/ng-annotate">ng-annotate on GitHub</a></p>
+		</header>
+
+		<section ng-repeat="text in demoTexts">
+			<ng-annotate
+				options="options"
+				annotations="annotations[$index]"
+				on-annotate="onAnnotate"
+				on-annotate-error="onAnnotateError"
+				on-editor-show="onEditorShow"
+				text="text">
+			</ng-annotate>
+
+			<h2>Annotation summary</h2>
+			<ul>
+				<li ng-repeat="a in annotationsAsFlatList()">
+					{{a.data.comment}}
+					<span ng-if="a.data.points">({{a.data.points}} points)</span>
+				</li>
+			</ul>
+		</section>
+
+	</article>
+
+	<!-- Demo dependencies -->
+	<script src="lib/jquery/js/jquery.min.js"></script>
+	<script src="lib/angular/js/angular.min.js"></script>
+
+	<!-- ng-annotate -->
+	<script src="lib/ng-annotate/js/ng-annotate-latest.min.js"></script>
+
+	<!-- demo -->
+	<script src="src/main.js"></script>
+
+</body>
+</html>

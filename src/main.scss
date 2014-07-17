@@ -1,0 +1,144 @@
+*,
+*::before,
+*::after {
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+}
+
+header {
+	margin: 10% 0;
+}
+
+header p {
+	margin: 20px 0 0;
+}
+
+section {
+	margin-top: 40px;
+}
+
+h1 {
+	font-family: Georgia, serif;
+}
+
+label {
+	cursor: pointer;
+}
+
+.container {
+	max-width: 45em;
+}
+
+.form-group-title {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.ng-annotation-popup textarea,
+.ng-annotation-popup input {
+	margin-bottom: 10px;
+}
+
+.list-colors li {
+	float: left;
+	width: 30px;
+}
+
+.list-colors li + li {
+	margin-left: 5px;
+}
+
+.list-templates li + li {
+	margin-top: 5px;
+}
+
+.swatch {
+	-webkit-transition: border-color 0.15s;
+	        transition: border-color 0.15s;
+	display: block;
+	width: 100%;
+	border-radius: 3px;
+	border: 1px solid hsla(0, 0%, 0%, 0.075);
+	outline: 0;
+}
+
+.swatch:hover,
+.swatch:focus {
+	border-color: hsla(0, 0%, 0%, 0.3);
+}
+
+.swatch.active {
+	border-color: hsla(0, 0%, 0%, 0.5);
+}
+
+.swatch-color {
+	padding: 0;
+	text-indent: -9999px;
+	overflow: hidden;
+}
+
+.swatch.red { color: #000; background: #fcbcbc; }
+.swatch.green { color: #000; background: #c7fcbc; }
+.swatch.blue { color: #000; background: #bcdffc; }
+.swatch.pink { color: #000; background: #fcbcfa; }
+.swatch.yellow { color: #000; background: #fafcbc; }
+.swatch.aqua { color: #000; background: #bcfcf7; }
+
+.text-center {
+	text-align: center;
+}
+
+/* ng-annotate theme */
+
+.ng-annotation {
+	border-bottom: 1px solid #000;
+	cursor: pointer;
+}
+
+.ng-annotation-popup,
+.ng-annotation-tooltip {
+	width: 227px;
+	padding: 10px;
+	background: #FFF;
+	border: 1px solid hsla(0, 0%, 0%, 0.18);
+	border-radius: 5px;
+	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.2);
+}
+
+	.ng-annotation-popup label,
+	.ng-annotation-tooltip label {
+		display: block;
+	}
+
+	.ng-annotation-popup::after,
+	.ng-annotation-tooltip::after {
+		content: "";
+		-webkit-transform: rotate(45deg);
+		-ms-transform: rotate(45deg);
+		    transform: rotate(45deg);
+		position: absolute;
+		right: -6px;
+		top: 50%;
+		z-index: 990;
+		width: 10px;
+		height: 10px;
+		margin-top: -5px;
+		background: #fff;
+		border-top: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+		box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.11);
+	}
+
+	.ng-annotate-popup-points {
+		display: table;
+		margin-bottom: 0;
+	}
+	
+	.ng-annotate-popup-points label,
+	.ng-annotate-popup-points input {
+		display: table-cell;
+	}
+	
+	.ng-annotate-popup-points label {
+		padding-right: 10px;
+	}

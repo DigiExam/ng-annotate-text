@@ -1,38 +1,21 @@
 {
-  "name": "ng-annotate",
-  "version": "2.5.0",
-  "homepage": "https://github.com/DigiExam/ng-annotate",
+  "name": "ng-annotate-demo",
+  "homepage": "http://digiexam.github.io/ng-annotate",
   "authors": [
-    "(Rasmus Milesson <rasmus.milesson@arcadelia.com>)",
-    "(Robin Andersson <robin.andersson@digiexam.se>)",
     "(Kenneth Sundqvist <kenneth.sundqvist@digiexam.se>)"
-  ],
-  "description": "An AngularJS directive to assist with annotation of text",
-  "keywords": [
-    "angularjs",
-    "annotation"
   ],
   "license": "CC-BY-NC",
   "private": true,
-  "main": [
-    "./dist/ng-annotate-latest.min.css",
-    "./dist/ng-annotate-latest.min.js"
-  ],
-  "ignore": [
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests",
-    "example-app",
-    "dev",
-    "/css/",
-    "/js/"
-  ],
-  "dependencies": {
-    "angular": "~1.2.6"
-  },
   "devDependencies": {
     "jquery": "~1.11.0",
-    "bootstrap": "~3.1.1"
+    "ng-annotate": "git@github.com:DigiExam/ng-annotate.git"
+  },
+  "exportsOverride": {
+    "jquery": { "js": ["dist/*.min.js", "dist/*.min.map"] },
+    "angular": { "js": ["*.min.js", "*.min.js.map"] },
+    "ng-annotate": {
+      "js": "dist/*.min.js",
+      "css": "dist/*.min.css"
+    }
   }
 }
