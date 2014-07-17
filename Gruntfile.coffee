@@ -5,7 +5,6 @@ module.exports = (grunt) ->
 	# Development
 	defaultTasks = ["coffee:development", "sass:development", "autoprefixer:development"]
 	watchTasks = defaultTasks
-	serveTasks = ["connect", "watch"]
 
 	grunt.initConfig
 		pkg: grunt.file.readJSON "package.json"
@@ -70,22 +69,13 @@ module.exports = (grunt) ->
 				files: ["<%= coffee.release.src %>", "<%= sass.release.src %>"]
 				tasks: watchTasks
 
-		connect:
-			server:
-				options:
-					port: 3000
-					hostname: "localhost"
-					open: "http://localhost:3000/example-app/"
-
 	grunt.loadNpmTasks "grunt-contrib-uglify"
 	grunt.loadNpmTasks "grunt-contrib-coffee"
 	grunt.loadNpmTasks "grunt-contrib-watch"
 	grunt.loadNpmTasks "grunt-contrib-sass"
 	grunt.loadNpmTasks "grunt-contrib-cssmin"
-	grunt.loadNpmTasks "grunt-contrib-connect"
 	grunt.loadNpmTasks "grunt-contrib-copy"
 	grunt.loadNpmTasks "grunt-autoprefixer"
 
 	grunt.registerTask "default", defaultTasks
 	grunt.registerTask "dist", distTasks
-	grunt.registerTask "serve", serveTasks
