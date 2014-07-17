@@ -13,33 +13,40 @@
 </head>
 <body>
 
-	<div ng-controller="MainController">
+	<div class="container" ng-controller="MainController">
 
-		<h1>ng-annotate demo</h1>
+		<div class="header">
+			<h1>ng-annotate demo</h1>
 
-		<p>Select text to create annotations.</p>
-		<p><a href="https://github.com/DigiExam/ng-annotate">ng-annotate on GitHub</a></p>
+			<p>Select text to create annotations.</p>
+			<p><a href="https://github.com/DigiExam/ng-annotate">View source code on GitHub.</a></p>
+		</div>
 
-		<div ng-repeat="text in demoTexts">
-			<h2>Example</h2>
+		<div class="example" ng-repeat="text in demoTexts">
+			<div class="example-source">
+				<h2>Example</h2>
 
-			<ng-annotate
-				options="options"
-				annotations="annotations[$index]"
-				on-annotate="onAnnotate"
-				on-annotate-error="onAnnotateError"
-				on-editor-show="onEditorShow"
-				text="text">
-			</ng-annotate>
+				<ng-annotate
+					class="example-source-text"
+					options="options"
+					annotations="annotations[$index]"
+					on-annotate="onAnnotate"
+					on-annotate-error="onAnnotateError"
+					on-editor-show="onEditorShow"
+					text="text">
+				</ng-annotate>
+			</div>
 
-			<h3>Annotation summary</h3>
+			<div class="example-summary">
+				<h3>Annotation summary</h3>
 
-			<ul>
-				<li ng-repeat="a in annotationsAsFlatList()">
-					{{a.data.comment}}
-					<span ng-if="a.data.points">({{a.data.points}} points)</span>
-				</li>
-			</ul>
+				<ul>
+					<li ng-repeat="a in annotationsAsFlatList()">
+						{{a.data.comment}}
+						<span ng-if="a.data.points">({{a.data.points}} points)</span>
+					</li>
+				</ul>
+			</div>
 		</div>
 
 	</div>
