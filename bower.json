@@ -9,13 +9,5 @@
   "devDependencies": {
     "jquery": "~1.11.0",
     "ng-annotate": "git@github.com:DigiExam/ng-annotate.git"
-  },
-  "exportsOverride": {
-    "jquery": { "js": ["dist/*.min.js", "dist/*.min.map"] },
-    "angular": { "js": ["*.min.js", "*.min.js.map"] },
-    "ng-annotate": {
-      "js": "dist/*.min.js",
-      "css": "dist/*.min.css"
-    }
   }
 }
