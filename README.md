@@ -18,6 +18,8 @@ ng-annotate is a library to annotate texts in AngularJS.
 6. Build the project files: `gulp`
   * Build them whenever they change: `gulp watch`
 
+To make development of ng-annotate easier you can check out the `master` branch in one directory and the `gh-pages` branch in another, then symlink the unstable files from `master` into the `lib` directory in `gh-pages`, and change the includes in `index.html` to use the unstable versions.
+
 ## Browser compatability
 
 Chrome, Firefox, Safari and IE9+
