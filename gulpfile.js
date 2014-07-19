@@ -22,7 +22,8 @@ var src = {
 		"bower_components/angular/angular.js",
 		"bower_components/jquery/dist/jquery.js",
 		"bower_components/ng-annotate/dist/*latest.min*"
-	]
+	],
+	livereload: ["dist/*", "lib/*"]
 };
 
 var dest = {
@@ -42,12 +43,23 @@ gulp.task("watch", function() {
 });
 
 gulp.task("serve", function() {
-	gulp.src('./')
-			.pipe(r.webserver({
-				port: 3000,
-				open: "http://localhost:3000/"
-			}));
-	return gulp.start("watch");
+	r.connect.server({
+		port: 3000,
+		root: ".",
+		livereload: {
+			ignore: [
+				"^bower_components",
+				"^node_modules"
+			]
+		}
+	});
+	return gulp.start("livereload", "watch");
+});
+
+gulp.task("livereload", function() {
+	return gulp.src(src.livereload)
+			.pipe(r.watch())
+			.pipe(r.connect.reload());
 });
 
 gulp.task("js", function() {
