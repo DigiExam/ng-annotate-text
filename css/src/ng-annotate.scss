@@ -1,4 +1,39 @@
-$colors: (
+// Variables
+
+$color-text: #333;
+$color-bg: #fff;
+$color-border: #ccc;
+
+$color-btn-text: #444;
+$color-btn-bg: #f5f5f5;
+$color-btn-border: hsla(0, 0%, 0%, 0.2);
+$color-btn-ok-text: #fff;
+$color-btn-ok-bg: #1bb352;
+$color-btn-delete-text: #fff;
+$color-btn-delete-bg: #d94155;
+
+$fontSize: 13px;
+$lineHeight: 18 / 13;
+$fontFamily: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font: $fontSize#{"/"}$lineHeight $fontFamily;
+
+$space: 10px;
+
+$zindex-popup: 990;
+$zindex-popup-arrow: 1;
+$zindex-tooltip: 1000;
+
+$popup-width: 227px;
+$popup-border: 1px solid hsla(0, 0%, 0%, 0.18);
+
+$tooltip-text: #f7f7f7;
+$tooltip-bg: hsla(0, 0%, 0%, 0.85);
+$tooltip-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+
+$swatch-color-width: ($popup-width - 2px - ($space * 2) - ($space / 2 * 5)) / 6;
+$swatch-color-height: $swatch-color-width * 0.75;
+
+$type-colors: (
 	'red': #fcbcbc,
 	'green': #c7fcbc,
 	'blue': #bcdffc,
@@ -7,14 +42,256 @@ $colors: (
 	'aqua': #bcfcf7
 );
 
-@each $type, $color in $colors {
-	.ng-annotation-type-#{$type} { color: #000; background: $color; border-color: $color; }
-}
-.ng-annotation-type-strike { text-decoration: line-through; }
 
-.ng-annotation-popup,
-.ng-annotation-tooltip {
+// Mixins
+
+@mixin clearfix() {
+	&::before,
+	&::after {
+		content: " ";
+		display: table;
+	}
+
+	&::after {
+		clear: both;
+	}
+}
+
+
+// Type styles
+
+.ng-annotation-type {
+	@each $type, $color in $type-colors {
+		&-#{$type} { color: #000; background: $color; border-color: $color; }
+	}
+
+	&-strike { text-decoration: line-through; }
+}
+
+
+// Annotation
+
+.ng-annotation {
+	cursor: pointer;
+	border-bottom: 1px solid #000;
+}
+
+
+// Popup
+
+.ng-annotation-popup {
 	display: none;
 	position: absolute;
-	z-index: 1000;
+	z-index: $zindex-popup;
+	width: $popup-width;
+	padding: $space;
+	color: $color-text;
+	background: $color-bg;
+	border: $popup-border;
+	border-radius: 5px;
+	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.2);
+	font: $font;
+	text-rendering: optimizelegibility;
+
+	&,
+	& * {
+		box-sizing: border-box;
+	}
+
+	&::after {
+		content: "";
+		transform: rotate(45deg);
+		position: absolute;
+		top: 50%;
+		right: -6px;
+		z-index: $zindex-popup-arrow;
+		width: 10px;
+		height: 10px;
+		margin-top: -5px;
+		background: $color-bg;
+		border-top: $popup-border;
+		border-right: $popup-border;
+		box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07);
+	}
+
+	label {
+		cursor: pointer;
+	}
+
+	&-group {
+		@include clearfix();
+		margin-bottom: $space;
+	}
+
+	&-actions {
+		margin-top: $space * 1.5;
+	}
+
+	&-label {
+		display: block;
+		font-weight: bold;
+		margin-bottom: $space / 2;
+	}
+
+	&-field {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		padding: 3px;
+		color: $color-text;
+		background: $color-bg;
+		border: 1px solid $color-border;
+		border-radius: 3px;
+		font-size: inherit;
+	}
+
+	&-points {
+		display: table;
+		width: 100%;
+	}
+
+	&-points {
+		&-label,
+		&-field {
+			display: table-cell;
+		}
+
+		&-label {
+			padding-right: $space;
+		}
+	}
+
+	&-colors,
+	&-templates {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&-colors li {
+		float: left;
+
+		& + li {
+			margin-left: 5px;
+		}
+	}
+
+	&-templates li + li {
+		margin-top: 5px;
+	}
+}
+
+
+// Tooltip
+
+.ng-annotation-tooltip {
+	$comment-2nd-line-blocker: 1px;
+
+	display: none;
+	position: absolute;
+	z-index: $zindex-tooltip;
+	max-width: 20em;
+	padding: ($space / 2) $space ($space / 2 - $comment-2nd-line-blocker);
+	color: $tooltip-text;
+	background: $tooltip-bg;
+	border-radius: $space / 2;
+	box-shadow: $tooltip-shadow;
+	font: $font;
+	text-shadow: 0 0 2px #000;
+
+	&-points {
+		float: right;
+	}
+
+	&-points,
+	&-comment {
+		padding-bottom: $comment-2nd-line-blocker;
+	}
+
+	&-points + &-comment::before {
+		content: "";
+		float: right;
+		width: $space * 2;
+		height: $lineHeight * 1em;
+		margin-bottom: $comment-2nd-line-blocker;
+	}
+}
+
+
+// Btn
+
+.ng-annotation-btn {
+	padding: ($space / 2) $space;
+	cursor: pointer;
+	color: $color-btn-text;
+	background: $color-btn-bg linear-gradient(to bottom, hsla(0, 0%, 100%, 0.15), hsla(0, 0%, 0%, 0.1));
+	border: 1px solid $color-btn-border;
+	border-radius: 3px;
+	box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.2),
+			0 1px 3px hsla(0, 0%, 0%, 0.1);
+	font: inherit;
+	text-shadow: 0 1px 1px #fff;
+
+	&:active {
+		background-image: linear-gradient(to top, hsla(0, 0%, 100%, 0), hsla(0, 0%, 0%, 0.1));
+		box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
+	}
+
+	&-save,
+	&-delete {
+		text-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.3);
+	}
+
+	&-save {
+		float: right;
+		color: $color-btn-ok-text;
+		background-color: $color-btn-ok-bg;
+	}
+
+	&-delete {
+		color: $color-btn-delete-text;
+		background-color: $color-btn-delete-bg;
+	}
+}
+
+
+// Swatch
+
+.ng-annotation-swatch {
+	transition: border-color 0.15s;
+	display: block;
+	width: 100%;
+	cursor: pointer;
+	border-radius: 3px;
+	border: 1px solid hsla(0, 0%, 0%, 0.075);
+	font: inherit;
+	text-align: left;
+
+	&:hover {
+		border-color: hsla(0, 0%, 0%, 0.3);
+	}
+
+	&-active {
+		border-color: hsla(0, 0%, 0%, 0.5);
+	}
+
+	&-color {
+		width: $swatch-color-width;
+		height: $swatch-color-height;
+		overflow: hidden;
+		padding: 0;
+		text-indent: -9999px;
+	}
+
+	&-template {
+		padding: ($space / 4) ($space / 2);
+
+		&-name {
+			float: left;
+		}
+
+		&-points {
+			float: right;
+		}
+	}
 }
