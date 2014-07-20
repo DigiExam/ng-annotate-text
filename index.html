@@ -44,7 +44,12 @@
 				<ul>
 					<li ng-repeat="a in annotationsAsFlatList()">
 						{{a.data.comment}}
-						<span ng-if="a.data.points">({{a.data.points}} points)</span>
+						<span ng-if="a.data.points">
+							({{a.data.points}}
+							<ng-pluralize
+									count="a.data.points"
+									when="{'-1': 'point', '1': 'point', 'other': 'points'}"></ng-pluralize>)
+						</span>
 					</li>
 				</ul>
 			</div>
