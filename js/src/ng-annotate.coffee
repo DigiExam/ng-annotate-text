@@ -21,7 +21,7 @@ parseAnnotations = (text, annotations = [], indexOffset = 0)->
 		text = insertAt text, annotation.endIndex + indexOffset, "</span>"
 		if annotation.children.length
 			text = parseAnnotations text, annotation.children, annotation.startIndex + indexOffset
-		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotation ng-annotation-" + annotation.id + " ng-annotation-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
+		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-annotation ng-annotate-" + annotation.id + " ng-annotate-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
 getAnnotationById = (annotations, aId)->
@@ -38,7 +38,7 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 
 		angular.extend @,
 			scope: scope
-			$el: angular.element "<div class=\"ng-annotation-popup\" />"
+			$el: angular.element "<div class=\"ng-annotate-popup\" />"
 			$anchor: null
 
 			show: (cb = angular.noop, speed = "fast")->
@@ -83,7 +83,7 @@ ngAnnotate.factory "NGAnnotateTooltip", ->
 
 		angular.extend @,
 			scope: scope,
-			$el: angular.element "<div class=\"ng-annotation-tooltip\" />"
+			$el: angular.element "<div class=\"ng-annotate-tooltip\" />"
 			$anchor: null
 
 			show: (cb = angular.noop, speed = "fast")->
@@ -285,7 +285,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					try
 						annotation = createAnnotation()
 						$scope.$apply()
-						$span = element.find ".ng-annotation-" + annotation.id
+						$span = element.find ".ng-annotate-" + annotation.id
 					catch ex
 						if $scope.onAnnotateError?
 							$scope.onAnnotateError ex

@@ -58,240 +58,247 @@ $type-colors: (
 }
 
 
-// Type styles
+// Namespace
 
-.ng-annotation-type {
-	@each $type, $color in $type-colors {
-		&-#{$type} { color: #000; background: $color; border-color: $color; }
+.ng-annotate {
+
+
+	// Type styles
+
+	&-type {
+		@each $type, $color in $type-colors {
+			&-#{$type} { color: #000; background: $color; border-color: $color; }
+		}
+
+		&-strike { text-decoration: line-through; }
 	}
 
-	&-strike { text-decoration: line-through; }
-}
 
+	// Annotation
 
-// Annotation
-
-.ng-annotation {
-	cursor: pointer;
-	border-bottom: 1px solid #000;
-}
-
-
-// Popup
-
-.ng-annotation-popup {
-	display: none;
-	position: absolute;
-	z-index: $zindex-popup;
-	width: $popup-width;
-	padding: $space;
-	color: $color-text;
-	background: $color-bg;
-	border: $popup-border;
-	border-radius: 5px;
-	box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.2);
-	font: $font;
-	text-rendering: optimizelegibility;
-
-	&,
-	& * {
-		box-sizing: border-box;
-	}
-
-	&::after {
-		content: "";
-		transform: rotate(45deg);
-		position: absolute;
-		top: 50%;
-		right: -6px;
-		z-index: $zindex-popup-arrow;
-		width: 10px;
-		height: 10px;
-		margin-top: -5px;
-		background: $color-bg;
-		border-top: $popup-border;
-		border-right: $popup-border;
-		box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07);
-	}
-
-	label {
+	&-annotation {
 		cursor: pointer;
+		border-bottom: 1px solid #000;
 	}
 
-	&-group {
-		@include clearfix();
-		margin-bottom: $space;
-	}
 
-	&-actions {
-		margin-top: $space * 1.5;
-	}
+	// Popup
 
-	&-label {
-		display: block;
-		font-weight: bold;
-		margin-bottom: $space / 2;
-	}
-
-	&-field {
-		display: block;
-		box-sizing: border-box;
-		width: 100%;
-		padding: 3px;
+	&-popup {
+		display: none;
+		position: absolute;
+		z-index: $zindex-popup;
+		width: $popup-width;
+		padding: $space;
 		color: $color-text;
 		background: $color-bg;
-		border: 1px solid $color-border;
-		border-radius: 3px;
-		font-size: inherit;
-	}
+		border: $popup-border;
+		border-radius: 5px;
+		box-shadow: 0 1px 10px hsla(0, 0%, 0%, 0.2);
+		font: $font;
+		text-rendering: optimizelegibility;
 
-	&-points {
-		display: table;
-		width: 100%;
-	}
+		&,
+		& * {
+			box-sizing: border-box;
+		}
 
-	&-points {
-		&-label,
-		&-field {
-			display: table-cell;
+		&::after {
+			content: "";
+			transform: rotate(45deg);
+			position: absolute;
+			top: 50%;
+			right: -6px;
+			z-index: $zindex-popup-arrow;
+			width: 10px;
+			height: 10px;
+			margin-top: -5px;
+			background: $color-bg;
+			border-top: $popup-border;
+			border-right: $popup-border;
+			box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07);
+		}
+
+		label {
+			cursor: pointer;
+		}
+
+		&-group {
+			@include clearfix();
+			margin-bottom: $space;
+		}
+
+		&-actions {
+			margin-top: $space * 1.5;
 		}
 
 		&-label {
-			padding-right: $space;
+			display: block;
+			font-weight: bold;
+			margin-bottom: $space / 2;
 		}
-	}
 
-	&-colors,
-	&-templates {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	&-colors li {
-		float: left;
-
-		& + li {
-			margin-left: 5px;
+		&-field {
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			padding: 3px;
+			color: $color-text;
+			background: $color-bg;
+			border: 1px solid $color-border;
+			border-radius: 3px;
+			font-size: inherit;
 		}
-	}
 
-	&-templates li + li {
-		margin-top: 5px;
-	}
-}
+		&-points {
+			display: table;
+			width: 100%;
+		}
 
+		&-points {
+			&-label,
+			&-field {
+				display: table-cell;
+			}
 
-// Tooltip
+			&-label {
+				padding-right: $space;
+			}
+		}
 
-.ng-annotation-tooltip {
-	$comment-2nd-line-blocker: 1px;
+		&-colors,
+		&-templates {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
 
-	display: none;
-	position: absolute;
-	z-index: $zindex-tooltip;
-	max-width: 20em;
-	padding: ($space / 2) $space ($space / 2 - $comment-2nd-line-blocker);
-	color: $tooltip-text;
-	background: $tooltip-bg;
-	border-radius: $space / 2;
-	box-shadow: $tooltip-shadow;
-	font: $font;
-	text-shadow: 0 0 2px #000;
-
-	&-points {
-		float: right;
-	}
-
-	&-points,
-	&-comment {
-		padding-bottom: $comment-2nd-line-blocker;
-	}
-
-	&-points + &-comment::before {
-		content: "";
-		float: right;
-		width: $space * 2;
-		height: $lineHeight * 1em;
-		margin-bottom: $comment-2nd-line-blocker;
-	}
-}
-
-
-// Btn
-
-.ng-annotation-btn {
-	padding: ($space / 2) $space;
-	cursor: pointer;
-	color: $color-btn-text;
-	background: $color-btn-bg linear-gradient(to bottom, hsla(0, 0%, 100%, 0.15), hsla(0, 0%, 0%, 0.1));
-	border: 1px solid $color-btn-border;
-	border-radius: 3px;
-	box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.2),
-			0 1px 3px hsla(0, 0%, 0%, 0.1);
-	font: inherit;
-	text-shadow: 0 1px 1px #fff;
-
-	&:active {
-		background-image: linear-gradient(to top, hsla(0, 0%, 100%, 0), hsla(0, 0%, 0%, 0.1));
-		box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
-	}
-
-	&-save,
-	&-delete {
-		text-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.3);
-	}
-
-	&-save {
-		float: right;
-		color: $color-btn-ok-text;
-		background-color: $color-btn-ok-bg;
-	}
-
-	&-delete {
-		color: $color-btn-delete-text;
-		background-color: $color-btn-delete-bg;
-	}
-}
-
-
-// Swatch
-
-.ng-annotation-swatch {
-	transition: border-color 0.15s;
-	display: block;
-	width: 100%;
-	cursor: pointer;
-	border-radius: 3px;
-	border: 1px solid hsla(0, 0%, 0%, 0.075);
-	font: inherit;
-	text-align: left;
-
-	&:hover {
-		border-color: hsla(0, 0%, 0%, 0.3);
-	}
-
-	&-active {
-		border-color: hsla(0, 0%, 0%, 0.5);
-	}
-
-	&-color {
-		width: $swatch-color-width;
-		height: $swatch-color-height;
-		overflow: hidden;
-		padding: 0;
-		text-indent: -9999px;
-	}
-
-	&-template {
-		padding: ($space / 4) ($space / 2);
-
-		&-name {
+		&-colors li {
 			float: left;
+
+			& + li {
+				margin-left: 5px;
+			}
 		}
+
+		&-templates li + li {
+			margin-top: 5px;
+		}
+	}
+
+
+	// Tooltip
+
+	&-tooltip {
+		$comment-2nd-line-blocker: 1px;
+
+		display: none;
+		position: absolute;
+		z-index: $zindex-tooltip;
+		max-width: 20em;
+		padding: ($space / 2) $space ($space / 2 - $comment-2nd-line-blocker);
+		color: $tooltip-text;
+		background: $tooltip-bg;
+		border-radius: $space / 2;
+		box-shadow: $tooltip-shadow;
+		font: $font;
+		text-shadow: 0 0 2px #000;
 
 		&-points {
 			float: right;
 		}
+
+		&-points,
+		&-comment {
+			padding-bottom: $comment-2nd-line-blocker;
+		}
+
+		&-points + &-comment::before {
+			content: "";
+			float: right;
+			width: $space * 2;
+			height: $lineHeight * 1em;
+			margin-bottom: $comment-2nd-line-blocker;
+		}
 	}
-}
+
+
+	// Btn
+
+	&-btn {
+		padding: ($space / 2) $space;
+		cursor: pointer;
+		color: $color-btn-text;
+		background: $color-btn-bg linear-gradient(to bottom, hsla(0, 0%, 100%, 0.15), hsla(0, 0%, 0%, 0.1));
+		border: 1px solid $color-btn-border;
+		border-radius: 3px;
+		box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, 0.2),
+				0 1px 3px hsla(0, 0%, 0%, 0.1);
+		font: inherit;
+		text-shadow: 0 1px 1px #fff;
+
+		&:active {
+			background-image: linear-gradient(to top, hsla(0, 0%, 100%, 0), hsla(0, 0%, 0%, 0.1));
+			box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
+		}
+
+		&-save,
+		&-delete {
+			text-shadow: 0 1px 1px hsla(0, 0%, 0%, 0.3);
+		}
+
+		&-save {
+			float: right;
+			color: $color-btn-ok-text;
+			background-color: $color-btn-ok-bg;
+		}
+
+		&-delete {
+			color: $color-btn-delete-text;
+			background-color: $color-btn-delete-bg;
+		}
+	}
+
+
+	// Swatch
+
+	&-swatch {
+		transition: border-color 0.15s;
+		display: block;
+		width: 100%;
+		cursor: pointer;
+		border-radius: 3px;
+		border: 1px solid hsla(0, 0%, 0%, 0.075);
+		font: inherit;
+		text-align: left;
+
+		&:hover {
+			border-color: hsla(0, 0%, 0%, 0.3);
+		}
+
+		&-active {
+			border-color: hsla(0, 0%, 0%, 0.5);
+		}
+
+		&-color {
+			width: $swatch-color-width;
+			height: $swatch-color-height;
+			overflow: hidden;
+			padding: 0;
+			text-indent: -9999px;
+		}
+
+		&-template {
+			padding: ($space / 4) ($space / 2);
+
+			&-name {
+				float: left;
+			}
+
+			&-points {
+				float: right;
+			}
+		}
+	}
+
+} // End Namespace
