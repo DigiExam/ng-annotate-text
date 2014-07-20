@@ -66,6 +66,10 @@ $type-colors: (
 	// Type styles
 
 	&-type {
+		&- { // No type
+			border-bottom: 1px solid #000;
+		}
+
 		@each $type, $color in $type-colors {
 			&-#{$type} { color: #000; background: $color; border-color: $color; }
 		}
@@ -78,7 +82,6 @@ $type-colors: (
 
 	&-annotation {
 		cursor: pointer;
-		border-bottom: 1px solid #000;
 	}
 
 
