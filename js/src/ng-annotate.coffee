@@ -33,6 +33,58 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
+smartPosition = (targetEl, anchorEl, offset = 0) ->
+	if not (targetEl or anchorEl)
+		return
+	targetBox = targetEl.getBoundingClientRect()
+	anchorBox = anchorEl.getBoundingClientRect()
+	viewportWidth = window.innerWidth
+	viewportHeight = window.innerHeight
+	scrollTop = document.body.scrollTop
+	scrollLeft = document.body.scrollLeft
+
+	posLeft = null
+	posTop = null
+
+	# Find which side has free space and position it there
+	if not (targetBox.width > 0 and targetBox.height > 0)
+		# Workaround if the target doesn't have width and height
+		# FIXME: don't use this to prevent some error or what it was, do a proper fix... mjeh..
+		posLeft = scrollLeft
+		posTop = scrollTop
+	else if anchorBox.left - offset >= targetBox.width
+		# Left
+		posLeft = scrollLeft + anchorBox.left - offset - targetBox.width
+	else if viewportWidth - anchorBox.right + offset >= targetBox.width
+		# Right
+		posLeft = scrollLeft + anchorBox.right + offset
+	else if anchorBox.top - offset >= targetBox.height
+		# Top
+		posTop = anchorBox.top - offset - targetBox.height
+	else if viewportHeight - anchorBox.bottom + offset >= targetBox.height
+		# Bottom
+		posTop = anchorBox.bottom + offset
+
+	# Center on null positions
+	if posLeft is null and posTop is null
+		# Center in viewport
+		posLeft = scrollLeft + (viewportWidth / 2) - (targetBox.width / 2)
+		posTop = scrollTop + (viewportHeight / 2) - (targetBox.height / 2)
+	else if posLeft is null
+		# Center on element from left
+		posLeft = scrollLeft + anchorBox.left + (anchorBox.width / 2) - (targetBox.width / 2)
+		posLeft = Math.max(scrollLeft + offset, Math.min(posLeft, scrollLeft + viewportWidth - targetBox.width - offset))
+	else if posTop is null
+		# Center on element from top
+		posTop = scrollTop + anchorBox.top + (anchorBox.height / 2) - (targetBox.height / 2)
+		posTop = Math.max(scrollTop + offset, Math.min(posTop, scrollTop + viewportHeight - targetBox.height - offset))
+
+	angular.element(targetEl).css
+		top: Math.round(posTop) || 0
+		left: Math.round(posLeft) || 0
+
+	return
+
 ngAnnotate.factory "NGAnnotatePopup", ->
 	NGAnnotatePopup = (scope)->
 
@@ -53,60 +105,6 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 
 			isVisible: ->
 				return @$el.is ":visible"
-
-			smartPosition: ->
-				anchorEl = @$anchor[0]
-				popupEl = @$el[0]
-
-				popupBox = popupEl && popupEl.getBoundingClientRect()
-				anchorBox = anchorEl && anchorEl.getBoundingClientRect()
-				viewportWidth = window.innerWidth
-				viewportHeight = window.innerHeight
-				scrollTop = document.body.scrollTop
-				scrollLeft = document.body.scrollLeft
-
-				offset = @scope.popupOffset
-
-				posLeft = null
-				posTop = null
-
-				# Find which side has free space and position it there
-				if not (popupBox.width > 0 and popupBox.height > 0)
-					# Workaround if the popup doesn't have width and height
-					posLeft = scrollLeft
-					posTop = scrollTop
-				else if anchorBox.left - offset >= popupBox.width
-					# Left
-					posLeft = scrollLeft + anchorBox.left - offset - popupBox.width
-				else if viewportWidth - anchorBox.right + offset >= popupBox.width
-					# Right
-					posLeft = scrollLeft + anchorBox.right + offset
-				else if anchorBox.top - offset >= popupBox.height
-					# Top
-					posTop = anchorBox.top - offset - popupBox.height
-				else if viewportHeight - anchorBox.bottom + offset >= popupBox.height
-					# Bottom
-					posTop = anchorBox.bottom + offset
-
-				# Center on null positions
-				if posLeft is null and posTop is null
-					# Center in viewport
-					posLeft = scrollLeft + (viewportWidth / 2) - (popupBox.width / 2)
-					posTop = scrollTop + (viewportHeight / 2) - (popupBox.height / 2)
-				else if posLeft is null
-					# Center on element from left
-					posLeft = scrollLeft + anchorBox.left + (anchorBox.width / 2) - (popupBox.width / 2)
-					posLeft = Math.max(scrollLeft + offset, Math.min(posLeft, scrollLeft + viewportWidth - popupBox.width - offset))
-				else if posTop is null
-					# Center on element from top
-					posTop = scrollTop + anchorBox.top + (anchorBox.height / 2) - (popupBox.height / 2)
-					posTop = Math.max(scrollTop + offset, Math.min(posTop, scrollTop + viewportHeight - popupBox.height - offset))
-
-				@$el.css
-					top: Math.round(posTop) || 0
-					left: Math.round(posLeft) || 0
-
-				return
 
 			destroy: (cb = angular.noop)->
 				scope = @scope
@@ -134,20 +132,6 @@ ngAnnotate.factory "NGAnnotateTooltip", ->
 
 			isVisible: ->
 				return @$el.is ":visible"
-
-			positionTop: ->
-				if not @$anchor?
-					throw new Error "NG_ANNOTATE_NO_ANCHOR"
-
-				anchorOffsetTop = @$anchor.offset().top
-				anchorHeight = @$anchor.innerHeight()
-				tooltipHeight = @$el.innerHeight()
-				@$el.css
-					top: Math.round anchorOffsetTop + (anchorHeight / 2) - (tooltipHeight / 2)
-
-			positionLeft: (value)->
-				@$el.css
-					left: Math.round value
 
 			destroy: (cb = angular.noop)->
 				scope = @scope
@@ -387,15 +371,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					tooltip.$anchor = $target
 
 					tooltip.scope.$reposition = ->
-						tooltip.positionTop()
-						paddingLeft = parseInt(element.css("padding-left"))
-
-						leftPos = element.offset().left + paddingLeft - tooltip.$el.innerWidth() + LEFT_MARGIN
-
-						if leftPos < 0
-							leftPos = 0
-
-						tooltip.positionLeft leftPos
+						smartPosition tooltip.$el[0], tooltip.$anchor[0], $scope.popupOffset ? POPUP_OFFSET
 						return
 
 					activeTooltip = tooltip
@@ -436,7 +412,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					popup.$anchor = anchor
 					popup.scope.onEditorShow = $scope.onEditorShow
 					popup.scope.onEditorHide = $scope.onEditorHide
-					popup.scope.popupOffset = $scope.popupOffset ? POPUP_OFFSET
 
 					popup.scope.$reject = ->
 						removeAnnotation annotation.id, $scope.annotations
@@ -453,7 +428,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						return
 
 					popup.scope.$reposition = ->
-						popup.smartPosition element
+						smartPosition popup.$el[0], popup.$anchor[0], $scope.popupOffset ? POPUP_OFFSET
 						return
 
 					activePopup = popup
