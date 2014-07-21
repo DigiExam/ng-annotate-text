@@ -98,22 +98,26 @@ smartPosition = (targetEl, anchorEl, offset = 0, preferredAxis = 'x') ->
 	return
 
 ngAnnotate.factory "NGAnnotatePopup", ->
-	NGAnnotatePopup = (scope)->
-
-		angular.extend @,
-			scope: scope
-			$el: angular.element "<div class=\"ng-annotate-popup\" />"
+	(args) ->
+		args = angular.extend {
+			scope: null,
+			callbacks: {},
+			template: "<div/>"
 			$anchor: null
+		}, args
 
-			show: (cb = angular.noop, speed = "fast")->
-				@$el.fadeIn speed, cb
-				if typeof scope.onEditorShow is "function"
-					scope.onEditorShow @$el
+		angular.extend @, args,
+			$el: angular.element args.template
 
-			hide: (cb = angular.noop, speed = "fast")->
-				@$el.fadeOut speed, cb
-				if typeof scope.onEditorHide is "function"
-					scope.onEditorHide @$el
+			show: (speed = "fast") ->
+				@$el.fadeIn speed
+				if typeof @callbacks.show is "function"
+					@callbacks.show @$el
+
+			hide: (speed = "fast")->
+				@$el.fadeOut speed
+				if typeof @callbacks.hide is "function"
+					@callbacks.hide @$el
 
 			isVisible: ->
 				return @$el.is ":visible"
@@ -122,34 +126,8 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 				scope = @scope
 				$el = @$el
 				@hide ->
-					cb()
-					scope.$destroy()
-					$el.remove()
-
-	return NGAnnotatePopup
-
-ngAnnotate.factory "NGAnnotateTooltip", ->
-	NGAnnotateTooltip = (scope)->
-
-		angular.extend @,
-			scope: scope,
-			$el: angular.element "<div class=\"ng-annotate-tooltip\" />"
-			$anchor: null
-
-			show: (cb = angular.noop, speed = "fast")->
-				@$el.fadeIn speed, cb
-
-			hide: (cb = angular.noop, speed = "fast")->
-				@$el.fadeOut speed, cb
-
-			isVisible: ->
-				return @$el.is ":visible"
-
-			destroy: (cb = angular.noop)->
-				scope = @scope
-				$el = @$el
-				@hide ->
-					cb()
+					if typeof cb is "function"
+						cb()
 					scope.$destroy()
 					$el.remove()
 
@@ -172,7 +150,7 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup, NGAnnotateTooltip)->
+ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup)->
 	return {
 		restrict: "E"
 		scope:
@@ -378,9 +356,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					if activePopup?
 						return
 
-					tooltip = new NGAnnotateTooltip $rootScope.$new()
+					tooltip = new NGAnnotatePopup
+						scope: $rootScope.$new()
+						template: "<div class='ng-annotate-tooltip' />"
+						$anchor: $target
 					tooltip.scope.$annotation = annotation
-					tooltip.$anchor = $target
 
 					tooltip.scope.$reposition = ->
 						smartPosition tooltip.$el[0], tooltip.$anchor[0], $scope.popupOffset ? POPUP_OFFSET, 'y'
@@ -417,13 +397,16 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					clearTooltip()
 
 				loadAnnotationPopup = (annotation, anchor, isNew)->
-					popup = new NGAnnotatePopup $rootScope.$new()
+					popup = new NGAnnotatePopup
+						scope: $rootScope.$new()
+						callbacks:
+							show: $scope.onEditorShow
+							hide: $scope.onEditorHide
+						template: "<div class='ng-annotate-popup' />"
+						$anchor: anchor
 					popup.scope.$isNew = isNew
 					popup.scope.$annotation = annotation
 					popup.scope.$readonly = options.readonly
-					popup.$anchor = anchor
-					popup.scope.onEditorShow = $scope.onEditorShow
-					popup.scope.onEditorHide = $scope.onEditorHide
 
 					popup.scope.$reject = ->
 						removeAnnotation annotation.id, $scope.annotations
