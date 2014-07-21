@@ -55,15 +55,15 @@ smartPosition = (targetEl, anchorEl, offset = 0) ->
 	else if anchorBox.left - offset >= targetBox.width
 		# Left
 		posLeft = scrollLeft + anchorBox.left - offset - targetBox.width
-	else if viewportWidth - anchorBox.right + offset >= targetBox.width
+	else if viewportWidth - anchorBox.right - offset >= targetBox.width
 		# Right
 		posLeft = scrollLeft + anchorBox.right + offset
 	else if anchorBox.top - offset >= targetBox.height
 		# Top
-		posTop = anchorBox.top - offset - targetBox.height
-	else if viewportHeight - anchorBox.bottom + offset >= targetBox.height
+		posTop = scrollTop + anchorBox.top - offset - targetBox.height
+	else if viewportHeight - anchorBox.bottom - offset >= targetBox.height
 		# Bottom
-		posTop = anchorBox.bottom + offset
+		posTop = scrollTop + anchorBox.bottom + offset
 
 	# Center on null positions
 	if posLeft is null and posTop is null
