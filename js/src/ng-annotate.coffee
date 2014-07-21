@@ -33,9 +33,24 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-smartPosition = (targetEl, anchorEl, offset = 0) ->
+smartPositionBeforeOrAfterAnchor = (targetSize, anchorStart, anchorEnd, viewportSize, scrollDistance, offset = 0) ->
+	pos = null
+	if anchorStart - offset >= targetSize
+		# Before anchor
+		pos = scrollDistance + anchorStart - offset - targetSize
+	else if viewportSize - anchorEnd - offset >= targetSize
+		# After anchor
+		pos = scrollDistance + anchorEnd + offset
+	pos
+
+smartPositionCenterOnAnchor = (targetSize, anchorSize, anchorStart, viewportSize, scrollDistance, offset = 0) ->
+	pos = scrollDistance + anchorStart + (anchorSize / 2) - (targetSize / 2)
+	Math.max(scrollDistance + offset, Math.min(pos, scrollDistance + viewportSize - targetSize - offset))
+
+smartPosition = (targetEl, anchorEl, offset = 0, preferredAxis = 'x') ->
 	if not (targetEl or anchorEl)
 		return
+
 	targetBox = targetEl.getBoundingClientRect()
 	anchorBox = anchorEl.getBoundingClientRect()
 	viewportWidth = window.innerWidth
@@ -52,18 +67,17 @@ smartPosition = (targetEl, anchorEl, offset = 0) ->
 		# FIXME: don't use this to prevent some error or what it was, do a proper fix... mjeh..
 		posLeft = scrollLeft
 		posTop = scrollTop
-	else if anchorBox.left - offset >= targetBox.width
-		# Left
-		posLeft = scrollLeft + anchorBox.left - offset - targetBox.width
-	else if viewportWidth - anchorBox.right - offset >= targetBox.width
-		# Right
-		posLeft = scrollLeft + anchorBox.right + offset
-	else if anchorBox.top - offset >= targetBox.height
-		# Top
-		posTop = scrollTop + anchorBox.top - offset - targetBox.height
-	else if viewportHeight - anchorBox.bottom - offset >= targetBox.height
-		# Bottom
-		posTop = scrollTop + anchorBox.bottom + offset
+	else
+		cachePosLeft = smartPositionBeforeOrAfterAnchor targetBox.width, anchorBox.left, anchorBox.right, viewportWidth, scrollLeft, offset
+		cachePosTop = smartPositionBeforeOrAfterAnchor targetBox.height, anchorBox.top, anchorBox.bottom, viewportHeight, scrollTop, offset
+		if preferredAxis is 'x'
+			posLeft = cachePosLeft
+			if posLeft is null
+				posTop = cachePosTop
+		else
+			posTop = cachePosTop
+			if posTop is null
+				posLeft = cachePosLeft
 
 	# Center on null positions
 	if posLeft is null and posTop is null
@@ -72,12 +86,10 @@ smartPosition = (targetEl, anchorEl, offset = 0) ->
 		posTop = scrollTop + (viewportHeight / 2) - (targetBox.height / 2)
 	else if posLeft is null
 		# Center on element from left
-		posLeft = scrollLeft + anchorBox.left + (anchorBox.width / 2) - (targetBox.width / 2)
-		posLeft = Math.max(scrollLeft + offset, Math.min(posLeft, scrollLeft + viewportWidth - targetBox.width - offset))
+		posLeft = smartPositionCenterOnAnchor targetBox.width, anchorBox.width, anchorBox.left, viewportWidth, scrollLeft, offset
 	else if posTop is null
 		# Center on element from top
-		posTop = scrollTop + anchorBox.top + (anchorBox.height / 2) - (targetBox.height / 2)
-		posTop = Math.max(scrollTop + offset, Math.min(posTop, scrollTop + viewportHeight - targetBox.height - offset))
+		posTop = smartPositionCenterOnAnchor targetBox.height, anchorBox.height, anchorBox.top, viewportHeight, scrollTop, offset
 
 	angular.element(targetEl).css
 		top: Math.round(posTop) || 0
@@ -371,7 +383,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					tooltip.$anchor = $target
 
 					tooltip.scope.$reposition = ->
-						smartPosition tooltip.$el[0], tooltip.$anchor[0], $scope.popupOffset ? POPUP_OFFSET
+						smartPosition tooltip.$el[0], tooltip.$anchor[0], $scope.popupOffset ? POPUP_OFFSET, 'y'
 						return
 
 					activeTooltip = tooltip
