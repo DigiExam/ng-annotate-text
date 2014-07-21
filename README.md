@@ -8,6 +8,12 @@ ng-annotate is a library to annotate texts in AngularJS.
 
 [Try a demo of ng-annotate.](http://blog.digiexam.se/annotate-test/)
 
+## Options
+
+Option | Default value | Description
+--- | --- | ---
+popupOffset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels.
+
 ## Getting started with development
 
 1. Install NodeJS ([nodejs.org](http://nodejs.org/))
