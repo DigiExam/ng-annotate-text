@@ -8,11 +8,11 @@ ng-annotate is a library to annotate texts in AngularJS.
 
 [Try a demo of ng-annotate.](http://blog.digiexam.se/annotate-test/)
 
-## Options
+## Attributes
 
-Option | Default value | Description
+Attribute | Default value | Description
 --- | --- | ---
-popupOffset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels.
+popup-offset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels.
 
 ## Getting started with development
 
