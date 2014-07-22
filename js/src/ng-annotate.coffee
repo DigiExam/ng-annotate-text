@@ -33,70 +33,6 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-smartPositionBeforeOrAfterAnchor = (targetSize, anchorStart, anchorEnd, viewportSize, scrollDistance, offset = 0) ->
-	pos = null
-	if anchorStart - offset >= targetSize
-		# Before anchor
-		pos = scrollDistance + anchorStart - offset - targetSize
-	else if viewportSize - anchorEnd - offset >= targetSize
-		# After anchor
-		pos = scrollDistance + anchorEnd + offset
-	pos
-
-smartPositionCenterOnAnchor = (targetSize, anchorSize, anchorStart, viewportSize, scrollDistance, offset = 0) ->
-	pos = scrollDistance + anchorStart + (anchorSize / 2) - (targetSize / 2)
-	Math.max(scrollDistance + offset, Math.min(pos, scrollDistance + viewportSize - targetSize - offset))
-
-smartPosition = (targetEl, anchorEl, offset = 0, preferredAxis = 'x') ->
-	if not (targetEl or anchorEl)
-		return
-
-	targetBox = targetEl.getBoundingClientRect()
-	anchorBox = anchorEl.getBoundingClientRect()
-	viewportWidth = window.innerWidth
-	viewportHeight = window.innerHeight
-	scrollTop = document.body.scrollTop
-	scrollLeft = document.body.scrollLeft
-
-	posLeft = null
-	posTop = null
-
-	# Find which side has free space and position it there
-	if not (targetBox.width > 0 and targetBox.height > 0)
-		# Workaround if the target doesn't have width and height
-		# FIXME: don't use this to prevent some error or what it was, do a proper fix... mjeh..
-		posLeft = scrollLeft
-		posTop = scrollTop
-	else
-		cachePosLeft = smartPositionBeforeOrAfterAnchor targetBox.width, anchorBox.left, anchorBox.right, viewportWidth, scrollLeft, offset
-		cachePosTop = smartPositionBeforeOrAfterAnchor targetBox.height, anchorBox.top, anchorBox.bottom, viewportHeight, scrollTop, offset
-		if preferredAxis is 'x'
-			posLeft = cachePosLeft
-			if posLeft is null
-				posTop = cachePosTop
-		else
-			posTop = cachePosTop
-			if posTop is null
-				posLeft = cachePosLeft
-
-	# Center on null positions
-	if posLeft is null and posTop is null
-		# Center in viewport
-		posLeft = scrollLeft + (viewportWidth / 2) - (targetBox.width / 2)
-		posTop = scrollTop + (viewportHeight / 2) - (targetBox.height / 2)
-	else if posLeft is null
-		# Center on element from left
-		posLeft = smartPositionCenterOnAnchor targetBox.width, anchorBox.width, anchorBox.left, viewportWidth, scrollLeft, offset
-	else if posTop is null
-		# Center on element from top
-		posTop = smartPositionCenterOnAnchor targetBox.height, anchorBox.height, anchorBox.top, viewportHeight, scrollTop, offset
-
-	angular.element(targetEl).css
-		top: Math.round(posTop) || 0
-		left: Math.round(posLeft) || 0
-
-	return
-
 ngAnnotate.factory "NGAnnotatePopup", ->
 	(args) ->
 		args = angular.extend {
@@ -138,8 +74,71 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 				@$el.stop(true).show("fast")
 
 			reposition: ->
-				smartPosition @$el[0], @$anchor[0], @offset, @preferredAxis
+				targetEl = @$el[0]
+				anchorEl = @$anchor[0]
+
+				if not (targetEl or anchorEl)
+					return
+
+				targetBox = targetEl.getBoundingClientRect()
+				anchorBox = anchorEl.getBoundingClientRect()
+				viewportWidth = window.innerWidth
+				viewportHeight = window.innerHeight
+				scrollTop = document.body.scrollTop
+				scrollLeft = document.body.scrollLeft
+
+				posLeft = null
+				posTop = null
+
+				# Find which side has free space and position it there
+				if not (targetBox.width > 0 and targetBox.height > 0)
+					# Workaround if the target doesn't have width and height
+					# FIXME: don't use this to prevent some error or what it was, do a proper fix... mjeh..
+					posLeft = scrollLeft
+					posTop = scrollTop
+				else
+					cachePosLeft = @getPositionBeforeOrAfterAnchor targetBox.width, anchorBox.left, anchorBox.right, viewportWidth, scrollLeft
+					cachePosTop = @getPositionBeforeOrAfterAnchor targetBox.height, anchorBox.top, anchorBox.bottom, viewportHeight, scrollTop
+					if @preferredAxis is 'x'
+						posLeft = cachePosLeft
+						if posLeft is null
+							posTop = cachePosTop
+					else
+						posTop = cachePosTop
+						if posTop is null
+							posLeft = cachePosLeft
+
+				# Center on null positions
+				if posLeft is null and posTop is null
+					# Center in viewport
+					posLeft = scrollLeft + (viewportWidth / 2) - (targetBox.width / 2)
+					posTop = scrollTop + (viewportHeight / 2) - (targetBox.height / 2)
+				else if posLeft is null
+					# Center on element from left
+					posLeft = @getPositionCenterOnAnchor targetBox.width, anchorBox.width, anchorBox.left, viewportWidth, scrollLeft
+				else if posTop is null
+					# Center on element from top
+					posTop = @getPositionCenterOnAnchor targetBox.height, anchorBox.height, anchorBox.top, viewportHeight, scrollTop
+
+				angular.element(targetEl).css
+					top: Math.round(posTop) || 0
+					left: Math.round(posLeft) || 0
+
 				return
+
+			getPositionBeforeOrAfterAnchor: (targetSize, anchorStart, anchorEnd, viewportSize, scrollDistance) ->
+				pos = null
+				if anchorStart - @offset >= targetSize
+					# Before anchor
+					pos = scrollDistance + anchorStart - @offset - targetSize
+				else if viewportSize - anchorEnd - @offset >= targetSize
+					# After anchor
+					pos = scrollDistance + anchorEnd + @offset
+				pos
+
+			getPositionCenterOnAnchor: (targetSize, anchorSize, anchorStart, viewportSize, scrollDistance) ->
+				pos = scrollDistance + anchorStart + (anchorSize / 2) - (targetSize / 2)
+				Math.max(scrollDistance + @offset, Math.min(pos, scrollDistance + viewportSize - targetSize - @offset))
 
 ngAnnotate.factory "NGAnnotation", ->
 	Annotation = (data)->
