@@ -195,7 +195,7 @@ $type-colors: (
 	&-tooltip {
 		$comment-2nd-line-blocker: 1px;
 
-		user-select: none;
+		pointer-events: none;
 		display: none;
 		position: absolute;
 		z-index: $zindex-tooltip;
