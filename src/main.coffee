@@ -93,15 +93,18 @@ angular.module("app", ["ngAnnotate"])
 			typeof comment is "string" and comment.length > 0
 
 		$scope.annotationsAsFlatList = (annotations = $scope.annotations[0]) ->
-			annotations
-				.map((annotation) ->
-					arr = []
-					if $scope.hasPoints(annotation.data.points) and $scope.hasComment(annotation.data.comment)
-						arr.push annotation
-					if annotation.children and annotation.children.length
-						arr = arr.concat $scope.annotationsAsFlatList annotation.children
-					arr
-				)
-				.reduce((prev, current) ->
-					prev.concat current
-				)
+			if not annotations.length
+				[]
+			else
+				annotations
+					.map((annotation) ->
+						arr = []
+						if $scope.hasPoints(annotation.data.points) and $scope.hasComment(annotation.data.comment)
+							arr.push annotation
+						if annotation.children and annotation.children.length
+							arr = arr.concat $scope.annotationsAsFlatList annotation.children
+						arr
+					)
+					.reduce((prev, current) ->
+						prev.concat current
+					)
