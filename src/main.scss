@@ -58,20 +58,14 @@ body {
 	}
 }
 
-.example-source {
-	float: left;
-	width: 70%;
-	padding-right: $space * 4;
-}
 
 .example-source-text {
 	white-space: pre-wrap;
 }
 
 .example-summary {
-	float: left;
-	width: 30%;
-
+	margin-top: $space * 2;
+	
 	h3 {
 		font-weight: normal;
 	}
@@ -84,5 +78,19 @@ body {
 
 	li {
 		margin-bottom: $space / 2;
+	}
+}
+
+@media only screen and (min-width: 45em) {
+	.example-source {
+		float: left;
+		width: 70%;
+		padding-right: $space * 4;
+	}
+	
+	.example-summary {
+		float: left;
+		width: 30%;
+		margin-top: 0;
 	}
 }
