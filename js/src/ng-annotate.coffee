@@ -104,6 +104,8 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 			callbacks: {},
 			template: "<div/>"
 			$anchor: null
+			preferredAxis: 'x'
+			offset: 0
 		}, args
 
 		angular.extend @, args,
@@ -111,6 +113,7 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 
 			show: (speed = "fast") ->
 				@$el.fadeIn speed
+				@reposition()
 				if typeof @callbacks.show is "function"
 					@callbacks.show @$el
 
@@ -133,6 +136,10 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 
 			stopDestroy: ->
 				@$el.stop(true).show("fast")
+
+			reposition: ->
+				smartPosition @$el[0], @$anchor[0], @offset, @preferredAxis
+				return
 
 ngAnnotate.factory "NGAnnotation", ->
 	Annotation = (data)->
@@ -166,10 +173,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 		template: "<p ng-bind-html=\"content\"></p>"
 		replace: true
 		compile: (tElement, tAttrs, transclude)->
-			LEFT_MARGIN = -10
-			POPUP_OFFSET = 10
+			($scope, element, attrs)->
+				POPUP_OFFSET = $scope.popupOffset ? 10
 
-			return ($scope, element, attrs)->
 				activePopup = null
 				activeTooltip = null
 
@@ -360,28 +366,25 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						scope: $rootScope.$new()
 						template: "<div class='ng-annotate-tooltip' />"
 						$anchor: $target
+						preferredAxis: 'y'
+						offset: POPUP_OFFSET
 					tooltip.scope.$annotation = annotation
-
-					tooltip.scope.$reposition = ->
-						smartPosition tooltip.$el[0], tooltip.$anchor[0], $scope.popupOffset ? POPUP_OFFSET, 'y'
-						return
 
 					activeTooltip = tooltip
 
-					locals = 
+					locals =
 						$scope: tooltip.scope
 						$template: tooltipTemplateData
 
 					tooltip.$el.html locals.$template
 					tooltip.$el.appendTo "body"
-					
+
 					if options.tooltipController
 						controller = $controller options.tooltipController, locals
 						tooltip.$el.data "$ngControllerController", controller
 						tooltip.$el.children().data "$ngControllerController", controller
 
 					$compile(tooltip.$el) tooltip.scope
-					tooltip.scope.$reposition()
 					tooltip.scope.$apply()
 					tooltip.show()
 
@@ -404,6 +407,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 							hide: $scope.onEditorHide
 						template: "<div class='ng-annotate-popup' />"
 						$anchor: anchor
+						offset: POPUP_OFFSET
+
 					popup.scope.$isNew = isNew
 					popup.scope.$annotation = annotation
 					popup.scope.$readonly = options.readonly
@@ -422,10 +427,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						clearPopup()
 						return
 
-					popup.scope.$reposition = ->
-						smartPosition popup.$el[0], popup.$anchor[0], $scope.popupOffset ? POPUP_OFFSET
-						return
-
 					activePopup = popup
 
 					locals = 
@@ -441,7 +442,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 						popup.$el.children().data "$ngControllerController", controller
 
 					$compile(popup.$el) popup.scope
-					popup.scope.$reposition()
 					popup.scope.$apply()
 					popup.show()
 
