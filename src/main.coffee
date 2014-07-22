@@ -44,8 +44,6 @@ angular.module("app", ["ngAnnotate"])
 		$scope.close = -> $scope.$close()
 		$scope.reject = -> $scope.$reject()
 
-		$timeout -> $scope.$reposition()
-
 		return
 
 	.controller "MainController", ($scope, $timeout, NGAnnotation) ->
