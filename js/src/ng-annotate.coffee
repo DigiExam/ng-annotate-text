@@ -42,6 +42,7 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 			$anchor: null
 			preferredAxis: 'x'
 			offset: 0
+			positionClass: '{{position}}'
 		}, args
 
 		angular.extend @, args,
@@ -101,23 +102,19 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 				posY = @getNewPositionOnAxis pos, 'y'
 
 				if @preferredAxis is 'x'
-					if typeof posX.pos is 'number'
+					if posX and typeof posX.pos is 'number'
 						pos.left = posX.pos
 						pos.edge = posX.edge
-						pos.relative = posX.relative
-					else
+					else if posY
 						pos.top = posY.pos
 						pos.edge = posY.edge
-						pos.relative = posY.relative
 				else
-					if typeof posY.pos is 'number'
+					if posY and typeof posY.pos is 'number'
 						pos.top = posY.pos
 						pos.edge = posY.edge
-						pos.relative = posY.relative
-					else
+					else if posX
 						pos.left = posX.pos
 						pos.edge = posX.edge
-						pos.relative = posX.relative
 
 				# Center on second axis
 
@@ -132,9 +129,11 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 					# Center on Y axis
 					pos.top = @getNewCenterPositionOnAxis pos, 'y'
 
-				angular.element(targetEl).css
-					top: Math.round(pos.top) || 0
-					left: Math.round(pos.left) || 0
+				@$el
+					.addClass pos.edge && @positionClass.replace "{{position}}", pos.edge
+					.css
+						top: Math.round(pos.top) || 0
+						left: Math.round(pos.left) || 0
 
 				return
 
@@ -382,6 +381,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					tooltip = new NGAnnotatePopup
 						scope: $rootScope.$new()
 						template: "<div class='ng-annotate-tooltip' />"
+						positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}"
 						$anchor: $target
 						preferredAxis: 'y'
 						offset: POPUP_OFFSET
@@ -423,6 +423,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 							show: $scope.onEditorShow
 							hide: $scope.onEditorHide
 						template: "<div class='ng-annotate-popup' />"
+						positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}"
 						$anchor: anchor
 						offset: POPUP_OFFSET
 

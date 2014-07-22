@@ -22,6 +22,7 @@ $space: 10px;
 $zindex-popup: 990;
 $zindex-popup-arrow: 1;
 $zindex-tooltip: 1000;
+$zindex-tooltip-arrow: 1;
 
 $popup-width: 227px;
 $popup-border: 1px solid hsla(0, 0%, 0%, 0.18);
@@ -106,25 +107,31 @@ $type-colors: (
 			box-sizing: border-box;
 		}
 
-		&::after {
+		label {
+			cursor: pointer;
+		}
+
+		&-docked::after {
 			content: "";
-			transform: rotate(45deg);
 			position: absolute;
-			top: 50%;
-			right: -6px;
 			z-index: $zindex-popup-arrow;
 			width: 10px;
 			height: 10px;
-			margin-top: -5px;
 			background: $color-bg;
 			border-top: $popup-border;
 			border-right: $popup-border;
 			box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07);
 		}
 
-		label {
-			cursor: pointer;
-		}
+		&-docked-left::after,
+		&-docked-right::after { top: 50%; margin-top: -5px; }
+		&-docked-top::after,
+		&-docked-bottom::after { left: 50%; margin-left: -5px; }
+
+		&-docked-left::after { transform: rotate(45deg); right: -6px; }
+		&-docked-right::after { transform: rotate(-135deg); left: -6px; }
+		&-docked-top::after { transform: rotate(135deg); bottom: -6px; }
+		&-docked-bottom::after { transform: rotate(-45deg); top: -6px; }
 
 		&-group {
 			@include clearfix();
@@ -207,6 +214,25 @@ $type-colors: (
 		box-shadow: $tooltip-shadow;
 		font: $font;
 		text-shadow: 0 0 2px #000;
+
+		&-docked::after {
+			content: "";
+			position: absolute;
+			z-index: $zindex-tooltip-arrow;
+			border: 4px solid;
+			border-color: $tooltip-bg $tooltip-bg transparent transparent;
+			box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07);
+		}
+
+		&-docked-left::after,
+		&-docked-right::after { top: 50%; margin-top: -4px; }
+		&-docked-top::after,
+		&-docked-bottom::after { left: 50%; margin-left: -4px; }
+
+		&-docked-left::after { transform: rotate(45deg); right: -4px; }
+		&-docked-right::after { transform: rotate(-135deg); left: -4px; }
+		&-docked-top::after { transform: rotate(135deg); bottom: -4px; }
+		&-docked-bottom::after { transform: rotate(-45deg); top: -4px; }
 
 		&-points {
 			float: right;
