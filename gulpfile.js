@@ -56,7 +56,6 @@ gulp.task("css-min", function() {
 			.pipe(r.rubySass())
 			.pipe(r.sourcemaps.init({loadMaps: true}))
 			.pipe(r.autoprefixer("last 2 versions", "ie >= 9", "Firefox ESR"))
-			// TODO: minifyCss breaks source maps
 			.pipe(r.minifyCss())
 			.pipe(r.rename({suffix: "-latest.min"}))
 			.pipe(r.sourcemaps.write("./"))
