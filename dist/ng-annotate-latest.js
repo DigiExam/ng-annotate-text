@@ -236,7 +236,11 @@
       scope: {
         text: "=",
         annotations: "=",
-        options: "=",
+        readonly: "=",
+        popupController: "=",
+        popupTemplateUrl: "=",
+        tooltipController: "=",
+        tooltipTemplateUrl: "=",
         onAnnotate: "=",
         onAnnotateDelete: "=",
         onAnnotateError: "=",
@@ -246,8 +250,14 @@
       },
       template: "<p ng-bind-html=\"content\"></p>",
       replace: true,
-      link: function($scope, element, attrs) {
-        var POPUP_OFFSET, activePopup, activeTooltip, clearPopup, clearSelection, clearTooltip, createAnnotation, loadAnnotationPopup, onAnnotationsChange, onClick, onMouseEnter, onMouseLeave, onSelect, options, popupTemplateData, removeAnnotation, removeChildren, tooltipTemplateData, _ref;
+      compile: function(el, attr) {
+        if (attr.readonly == null) {
+          attr.readonly = false;
+        }
+        return this.postLink;
+      },
+      postLink: function($scope, element, attrs) {
+        var POPUP_OFFSET, activePopup, activeTooltip, clearPopup, clearSelection, clearTooltip, createAnnotation, loadAnnotationPopup, onAnnotationsChange, onClick, onMouseEnter, onMouseLeave, onSelect, popupTemplateData, removeAnnotation, removeChildren, tooltipTemplateData, _ref;
         POPUP_OFFSET = (_ref = $scope.popupOffset) != null ? _ref : 10;
         activePopup = null;
         activeTooltip = null;
@@ -263,14 +273,6 @@
         };
         $scope.$watch("text", onAnnotationsChange);
         $scope.$watch("annotations", onAnnotationsChange, true);
-        options = {
-          readonly: false,
-          popupController: "",
-          popupTemplateUrl: "",
-          tooltipController: "",
-          tooltipTemplateUrl: ""
-        };
-        options = angular.extend(options, $scope.options);
         clearPopup = function() {
           var tId;
           if (activePopup == null) {
@@ -299,13 +301,13 @@
           clearPopup();
           return clearTooltip();
         });
-        if (options.popupTemplateUrl) {
-          $http.get(options.popupTemplateUrl).then(function(response) {
+        if ($scope.popupTemplateUrl) {
+          $http.get($scope.popupTemplateUrl).then(function(response) {
             return popupTemplateData = response.data;
           });
         }
-        if (options.tooltipTemplateUrl) {
-          $http.get(options.tooltipTemplateUrl).then(function(response) {
+        if ($scope.tooltipTemplateUrl) {
+          $http.get($scope.tooltipTemplateUrl).then(function(response) {
             return tooltipTemplateData = response.data;
           });
         }
@@ -459,8 +461,8 @@
           };
           tooltip.$el.html(locals.$template);
           tooltip.$el.appendTo("body");
-          if (options.tooltipController) {
-            controller = $controller(options.tooltipController, locals);
+          if ($scope.tooltipController) {
+            controller = $controller($scope.tooltipController, locals);
             tooltip.$el.data("$ngControllerController", controller);
             tooltip.$el.children().data("$ngControllerController", controller);
           }
@@ -493,7 +495,7 @@
           });
           popup.scope.$isNew = isNew;
           popup.scope.$annotation = annotation;
-          popup.scope.$readonly = options.readonly;
+          popup.scope.$readonly = $scope.readonly;
           popup.scope.$reject = function() {
             removeAnnotation(annotation.id, $scope.annotations);
             if ($scope.onAnnotateDelete != null) {
@@ -514,8 +516,8 @@
           };
           popup.$el.html(locals.$template);
           popup.$el.appendTo("body");
-          if (options.popupController) {
-            controller = $controller(options.popupController, locals);
+          if ($scope.popupController) {
+            controller = $controller($scope.popupController, locals);
             popup.$el.data("$ngControllerController", controller);
             popup.$el.children().data("$ngControllerController", controller);
           }
@@ -528,7 +530,7 @@
         return element.on("mouseup", function(event) {
           var selection;
           selection = window.getSelection();
-          if (!selection.isCollapsed && !options.readonly) {
+          if (!selection.isCollapsed && !$scope.readonly) {
             return onSelect(event);
           } else if (selection.isCollapsed && event.target.nodeName === "SPAN") {
             return onClick(event);

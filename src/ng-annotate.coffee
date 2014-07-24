@@ -178,7 +178,11 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 	scope:
 		text: "="
 		annotations: "="
-		options: "="
+		readonly: "="
+		popupController: "="
+		popupTemplateUrl: "="
+		tooltipController: "="
+		tooltipTemplateUrl: "="
 		onAnnotate: "="
 		onAnnotateDelete: "="
 		onAnnotateError: "="
@@ -187,7 +191,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 		popupOffset: "="
 	template: "<p ng-bind-html=\"content\"></p>"
 	replace: true
-	link: ($scope, element, attrs) ->
+
+	compile: (el, attr) ->
+		attr.readonly ?= false
+		@postLink
+
+	postLink: ($scope, element, attrs) ->
 		POPUP_OFFSET = $scope.popupOffset ? 10
 
 		activePopup = null
@@ -206,15 +215,6 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 		# Annotation parsing
 		$scope.$watch "text", onAnnotationsChange
 		$scope.$watch "annotations", onAnnotationsChange, true
-
-		# Setting options
-		options =
-			readonly: false
-			popupController: ""
-			popupTemplateUrl: ""
-			tooltipController: ""
-			tooltipTemplateUrl: ""
-		options = angular.extend options, $scope.options
 
 		clearPopup = ->
 			if not activePopup?
@@ -236,12 +236,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			clearPopup()
 			clearTooltip()
 
-		if options.popupTemplateUrl
-			$http.get(options.popupTemplateUrl).then (response)->
+		if $scope.popupTemplateUrl
+			$http.get($scope.popupTemplateUrl).then (response)->
 				popupTemplateData = response.data
 
-		if options.tooltipTemplateUrl
-			$http.get(options.tooltipTemplateUrl).then (response)->
+		if $scope.tooltipTemplateUrl
+			$http.get($scope.tooltipTemplateUrl).then (response)->
 				tooltipTemplateData = response.data
 
 		removeChildren = (annotation)->
@@ -395,8 +395,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			tooltip.$el.html locals.$template
 			tooltip.$el.appendTo "body"
 
-			if options.tooltipController
-				controller = $controller options.tooltipController, locals
+			if $scope.tooltipController
+				controller = $controller $scope.tooltipController, locals
 				tooltip.$el.data "$ngControllerController", controller
 				tooltip.$el.children().data "$ngControllerController", controller
 
@@ -428,7 +428,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 			popup.scope.$isNew = isNew
 			popup.scope.$annotation = annotation
-			popup.scope.$readonly = options.readonly
+			popup.scope.$readonly = $scope.readonly
 
 			popup.scope.$reject = ->
 				removeAnnotation annotation.id, $scope.annotations
@@ -453,8 +453,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			popup.$el.html locals.$template
 			popup.$el.appendTo "body"
 
-			if options.popupController
-				controller = $controller options.popupController, locals
+			if $scope.popupController
+				controller = $controller $scope.popupController, locals
 				popup.$el.data "$ngControllerController", controller
 				popup.$el.children().data "$ngControllerController", controller
 
@@ -469,7 +469,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			# We need to determine if the user actually selected something
 			# or if he just clicked on an annotation
 			selection = window.getSelection()
-			if !selection.isCollapsed and !options.readonly
+			if !selection.isCollapsed and !$scope.readonly
 				# User has selected something
 				onSelect event
 			else if selection.isCollapsed and event.target.nodeName is "SPAN"
