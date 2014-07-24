@@ -54,11 +54,11 @@ gulp.task("css", function() {
 gulp.task("css-min", function() {
 	return gulp.src(src.css)
 			.pipe(r.rubySass())
-//			.pipe(r.sourcemaps.init({loadMaps: true}))
+			.pipe(r.sourcemaps.init({loadMaps: true}))
 			.pipe(r.autoprefixer("last 2 versions", "ie >= 9", "Firefox ESR"))
 			// TODO: minifyCss breaks source maps
 			.pipe(r.minifyCss())
 			.pipe(r.rename({suffix: "-latest.min"}))
-//			.pipe(r.sourcemaps.write("./"))
+			.pipe(r.sourcemaps.write("./"))
 			.pipe(gulp.dest(dest));
 });
