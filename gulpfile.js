@@ -4,8 +4,8 @@ var gulp = require("gulp");
 var r = require("gulp-load-plugins")();
 
 var src = {
-	js: "js/src/*.coffee",
-	css: "css/src/*.scss"
+	js: "src/*.coffee",
+	css: "src/*.scss"
 };
 
 var dest = "dist";
