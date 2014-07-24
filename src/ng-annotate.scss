@@ -136,6 +136,10 @@ $type-colors: (
 		&-group {
 			@include clearfix();
 			margin-bottom: $space;
+
+			:last-child {
+				margin-bottom: 0;
+			}
 		}
 
 		&-actions {
