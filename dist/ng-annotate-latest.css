@@ -1,3 +1,5 @@
+.ng-annotate-type- {
+  border-bottom: 1px solid #000; }
 .ng-annotate-type-red {
   color: #000;
   background: #fcbcbc;
@@ -25,8 +27,7 @@
 .ng-annotate-type-strike {
   text-decoration: line-through; }
 .ng-annotate-annotation {
-  cursor: pointer;
-  border-bottom: 1px solid #000; }
+  cursor: pointer; }
 .ng-annotate-popup {
   display: none;
   position: absolute;
@@ -43,24 +44,44 @@
   .ng-annotate-popup, .ng-annotate-popup * {
     -moz-box-sizing: border-box;
          box-sizing: border-box; }
-  .ng-annotate-popup::after {
+  .ng-annotate-popup label {
+    cursor: pointer; }
+  .ng-annotate-popup-docked::after {
     content: "";
-    -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-            transform: rotate(45deg);
     position: absolute;
-    top: 50%;
-    right: -6px;
     z-index: 1;
     width: 10px;
     height: 10px;
-    margin-top: -5px;
     background: white;
     border-top: 1px solid rgba(0, 0, 0, 0.18);
     border-right: 1px solid rgba(0, 0, 0, 0.18);
     box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07); }
-  .ng-annotate-popup label {
-    cursor: pointer; }
+  .ng-annotate-popup-docked-left::after, .ng-annotate-popup-docked-right::after {
+    top: 50%;
+    margin-top: -5px; }
+  .ng-annotate-popup-docked-top::after, .ng-annotate-popup-docked-bottom::after {
+    left: 50%;
+    margin-left: -5px; }
+  .ng-annotate-popup-docked-left::after {
+    -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+    right: -6px; }
+  .ng-annotate-popup-docked-right::after {
+    -webkit-transform: rotate(-135deg);
+        -ms-transform: rotate(-135deg);
+            transform: rotate(-135deg);
+    left: -6px; }
+  .ng-annotate-popup-docked-top::after {
+    -webkit-transform: rotate(135deg);
+        -ms-transform: rotate(135deg);
+            transform: rotate(135deg);
+    bottom: -6px; }
+  .ng-annotate-popup-docked-bottom::after {
+    -webkit-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    top: -6px; }
   .ng-annotate-popup-group {
     margin-bottom: 10px; }
     .ng-annotate-popup-group::before, .ng-annotate-popup-group::after {
@@ -103,6 +124,7 @@
   .ng-annotate-popup-templates li + li {
     margin-top: 5px; }
 .ng-annotate-tooltip {
+  pointer-events: none;
   display: none;
   position: absolute;
   z-index: 1000;
@@ -114,6 +136,39 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font: 13px/1.38462 "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-shadow: 0 0 2px #000; }
+  .ng-annotate-tooltip-docked::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    border: 4px solid;
+    border-color: rgba(0, 0, 0, 0.85) rgba(0, 0, 0, 0.85) transparent transparent;
+    box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07); }
+  .ng-annotate-tooltip-docked-left::after, .ng-annotate-tooltip-docked-right::after {
+    top: 50%;
+    margin-top: -4px; }
+  .ng-annotate-tooltip-docked-top::after, .ng-annotate-tooltip-docked-bottom::after {
+    left: 50%;
+    margin-left: -4px; }
+  .ng-annotate-tooltip-docked-left::after {
+    -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+    right: -4px; }
+  .ng-annotate-tooltip-docked-right::after {
+    -webkit-transform: rotate(-135deg);
+        -ms-transform: rotate(-135deg);
+            transform: rotate(-135deg);
+    left: -4px; }
+  .ng-annotate-tooltip-docked-top::after {
+    -webkit-transform: rotate(135deg);
+        -ms-transform: rotate(135deg);
+            transform: rotate(135deg);
+    bottom: -4px; }
+  .ng-annotate-tooltip-docked-bottom::after {
+    -webkit-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    top: -4px; }
   .ng-annotate-tooltip-points {
     float: right; }
   .ng-annotate-tooltip-points, .ng-annotate-tooltip-comment {

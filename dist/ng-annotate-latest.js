@@ -1,2 +1,548 @@
-(function(){var getAnnotationById,insertAt,ngAnnotate,parseAnnotations,sortAnnotationsByEndIndex;ngAnnotate=angular.module("ngAnnotate",[]),insertAt=function(text,index,string){return text.substr(0,index)+string+text.substr(index)},sortAnnotationsByEndIndex=function(annotations){return annotations.sort(function(a,b){return a.endIndex<b.endIndex?-1:a.endIndex>b.endIndex?1:0})},parseAnnotations=function(text,annotations,indexOffset){var annotation,i,_i,_ref;if(null==annotations&&(annotations=[]),null==indexOffset&&(indexOffset=0),0===annotations.length)return text;for(annotations=sortAnnotationsByEndIndex(annotations),i=_i=_ref=annotations.length-1;_i>=0;i=_i+=-1)annotation=annotations[i],text=insertAt(text,annotation.endIndex+indexOffset,"</span>"),annotation.children.length&&(text=parseAnnotations(text,annotation.children,annotation.startIndex+indexOffset)),text=insertAt(text,annotation.startIndex+indexOffset,'<span class="ng-annotate-annotation ng-annotate-'+annotation.id+" ng-annotate-type-"+annotation.type+'" data-annotation-id="'+annotation.id+'">');return text},getAnnotationById=function(annotations,aId){var a,an,_i,_len;for(_i=0,_len=annotations.length;_len>_i;_i++){if(a=annotations[_i],aId===a.id)return a;if(a.children.length>0&&(an=getAnnotationById(a.children,aId),void 0!==an))return an}},ngAnnotate.factory("NGAnnotatePopup",function(){var NGAnnotatePopup;return NGAnnotatePopup=function(scope){return angular.extend(this,{scope:scope,$el:angular.element('<div class="ng-annotate-popup" />'),$anchor:null,show:function(cb,speed){return null==cb&&(cb=angular.noop),null==speed&&(speed="fast"),this.$el.fadeIn(speed,cb),"function"==typeof scope.onEditorShow?scope.onEditorShow(this.$el):void 0},hide:function(cb,speed){return null==cb&&(cb=angular.noop),null==speed&&(speed="fast"),this.$el.fadeOut(speed,cb),"function"==typeof scope.onEditorHide?scope.onEditorHide(this.$el):void 0},isVisible:function(){return this.$el.is(":visible")},positionTop:function(){var anchorHeight,anchorOffsetTop,popupHeight;if(null==this.$anchor)throw new Error("NG_ANNOTATE_NO_ANCHOR");return anchorOffsetTop=this.$anchor.offset().top,anchorHeight=this.$anchor.innerHeight(),popupHeight=this.$el.innerHeight(),this.$el.css({top:anchorOffsetTop+anchorHeight/2-popupHeight/2})},positionLeft:function(value){return this.$el.css({left:value})},destroy:function(cb){var $el;return null==cb&&(cb=angular.noop),scope=this.scope,$el=this.$el,this.hide(function(){return cb(),scope.$destroy(),$el.remove()})}})}}),ngAnnotate.factory("NGAnnotateTooltip",function(){var NGAnnotateTooltip;return NGAnnotateTooltip=function(scope){return angular.extend(this,{scope:scope,$el:angular.element('<div class="ng-annotate-tooltip" />'),$anchor:null,show:function(cb,speed){return null==cb&&(cb=angular.noop),null==speed&&(speed="fast"),this.$el.fadeIn(speed,cb)},hide:function(cb,speed){return null==cb&&(cb=angular.noop),null==speed&&(speed="fast"),this.$el.fadeOut(speed,cb)},isVisible:function(){return this.$el.is(":visible")},positionTop:function(){var anchorHeight,anchorOffsetTop,tooltipHeight;if(null==this.$anchor)throw new Error("NG_ANNOTATE_NO_ANCHOR");return anchorOffsetTop=this.$anchor.offset().top,anchorHeight=this.$anchor.innerHeight(),tooltipHeight=this.$el.innerHeight(),this.$el.css({top:Math.round(anchorOffsetTop+anchorHeight/2-tooltipHeight/2)})},positionLeft:function(value){return this.$el.css({left:Math.round(value)})},destroy:function(cb){var $el;return null==cb&&(cb=angular.noop),scope=this.scope,$el=this.$el,this.hide(function(){return cb(),scope.$destroy(),$el.remove()})},stopDestroy:function(){return this.$el.stop(!0).show("fast")}})}}),ngAnnotate.factory("NGAnnotation",function(){var Annotation;return Annotation=function(data){return angular.extend(this,{id:(new Date).getTime(),startIndex:null,endIndex:null,data:{points:0},type:"",children:[]}),null!=data?angular.extend(this,data):void 0}}),ngAnnotate.directive("ngAnnotate",function($rootScope,$compile,$http,$q,$controller,$sce,NGAnnotation,NGAnnotatePopup,NGAnnotateTooltip){return{restrict:"E",scope:{text:"=",annotations:"=",options:"=",onAnnotate:"=",onAnnotateDelete:"=",onAnnotateError:"=",onEditorShow:"=",onEditorHide:"="},template:'<p ng-bind-html="content"></p>',replace:!0,compile:function(){var LEFT_MARGIN;return LEFT_MARGIN=-10,function($scope,element){var activePopup,activeTooltip,clearPopup,clearSelection,clearTooltip,createAnnotation,loadAnnotationPopup,onAnnotationsChange,onClick,onMouseEnter,onMouseLeave,onSelect,options,popupTemplateData,removeAnnotation,removeChildren,tooltipTemplateData;return activePopup=null,activeTooltip=null,popupTemplateData="",tooltipTemplateData="",onAnnotationsChange=function(){var t;if(null!=$scope.text&&$scope.text.length)return t=parseAnnotations($scope.text,$scope.annotations),$scope.content=$sce.trustAsHtml(t)},$scope.$watch("text",onAnnotationsChange),$scope.$watch("annotations",onAnnotationsChange,!0),options={readonly:!1,popupController:"",popupTemplateUrl:"",tooltipController:"",tooltipTemplateUrl:""},options=angular.extend(options,$scope.options),clearPopup=function(){var tId;if(null!=activePopup)return tId=activePopup.scope.$annotation.id,activePopup.destroy(function(){return activePopup.scope.$annotation.id===tId?activePopup=null:void 0})},clearTooltip=function(){var tooltip;return tooltip=activeTooltip,null!=tooltip?tooltip.destroy(function(){return activeTooltip===tooltip?activeTooltip=null:void 0}):void 0},$scope.$on("$destroy",function(){return clearPopup(),clearTooltip()}),options.popupTemplateUrl&&$http.get(options.popupTemplateUrl).then(function(response){return popupTemplateData=response.data}),options.tooltipTemplateUrl&&$http.get(options.tooltipTemplateUrl).then(function(response){return tooltipTemplateData=response.data}),removeChildren=function(annotation){var a,i,_i,_ref,_results;for(_results=[],i=_i=_ref=annotation.children.length-1;_i>=0;i=_i+=-1)a=annotation.children[i],removeChildren(a),_results.push(a.children.splice(i,1));return _results},removeAnnotation=function(id,annotations){var a,i,_i,_len;for(i=_i=0,_len=annotations.length;_len>_i;i=++_i)if(a=annotations[i],removeAnnotation(id,a.children),a.id===id)return removeChildren(a),void annotations.splice(i,1)},createAnnotation=function(){var annotation,annotationParentCollection,attrId,parentAnnotation,parentId,prevAnnotation,prevSiblingId,prevSiblingSpan,range,sel;if(annotation=new NGAnnotation,sel=window.getSelection(),sel.isCollapsed)throw new Error("NG_ANNOTATE_NO_TEXT_SELECTED");if(range=sel.getRangeAt(0),range.startContainer!==range.endContainer)throw new Error("NG_ANNOTATE_PARTIAL_NODE_SELECTED");if("SPAN"===range.startContainer.parentNode.nodeName){if(parentId=null!=(attrId=range.startContainer.parentNode.getAttribute("data-annotation-id"))?parseInt(attrId,10):void 0,void 0===parentId)throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");parentAnnotation=getAnnotationById($scope.annotations,parentId),annotationParentCollection=parentAnnotation.children}else annotationParentCollection=$scope.annotations;if(annotationParentCollection.length)if(prevSiblingSpan=range.startContainer.previousSibling,null!=prevSiblingSpan){if(prevSiblingId=null!=(attrId=prevSiblingSpan.getAttribute("data-annotation-id"))?parseInt(attrId,10):void 0,null==prevSiblingId)throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");prevAnnotation=getAnnotationById($scope.annotations,prevSiblingId),annotation.startIndex=prevAnnotation.endIndex+range.startOffset,annotation.endIndex=prevAnnotation.endIndex+range.endOffset}else annotation.startIndex=range.startOffset,annotation.endIndex=range.endOffset;else annotation.startIndex=range.startOffset,annotation.endIndex=range.endOffset;return annotationParentCollection.push(annotation),clearSelection(),annotation},clearSelection=function(){return document.selection?document.selection.empty():window.getSelection&&window.getSelection().empty?window.getSelection().empty():window.getSelection&&window.getSelection().removeAllRanges?window.getSelection().removeAllRanges():void 0},onSelect=function(){var $span,annotation,ex;if(0!==popupTemplateData.length){try{annotation=createAnnotation(),$scope.$apply(),$span=element.find(".ng-annotate-"+annotation.id)}catch(_error){return ex=_error,void(null!=$scope.onAnnotateError&&$scope.onAnnotateError(ex))}return clearPopup(),clearTooltip(),loadAnnotationPopup(annotation,$span,!0)}},onClick=function(event){var $target,annotation,attrId,targetId;if(0!==popupTemplateData.length&&($target=angular.element(event.target),targetId=null!=(attrId=$target.attr("data-annotation-id"))?parseInt(attrId,10):void 0,null!=targetId))return null!=activePopup&&activePopup.scope.$annotation.id===targetId?void clearPopup():(annotation=getAnnotationById($scope.annotations,targetId),clearPopup(),clearTooltip(),loadAnnotationPopup(annotation,$target,!1))},onMouseEnter=function(event){var $target,annotation,attrId,controller,locals,targetId,tooltip;if(0!==tooltipTemplateData.length){if(event.stopPropagation(),$target=angular.element(event.target),targetId=null!=(attrId=$target.attr("data-annotation-id"))?parseInt(attrId,10):void 0,null!=activeTooltip&&activeTooltip.scope.$annotation.id===targetId)return void activeTooltip.stopDestroy();if(clearTooltip(),null!=targetId&&(annotation=getAnnotationById($scope.annotations,targetId),null==activePopup))return tooltip=new NGAnnotateTooltip($rootScope.$new()),tooltip.scope.$annotation=annotation,tooltip.$anchor=$target,tooltip.scope.$reposition=function(){var leftPos,paddingLeft;tooltip.positionTop(),paddingLeft=parseInt(element.css("padding-left")),leftPos=element.offset().left+paddingLeft-tooltip.$el.innerWidth()+LEFT_MARGIN,0>leftPos&&(leftPos=0),tooltip.positionLeft(leftPos)},activeTooltip=tooltip,locals={$scope:tooltip.scope,$template:tooltipTemplateData},tooltip.$el.html(locals.$template),tooltip.$el.appendTo("body"),options.tooltipController&&(controller=$controller(options.tooltipController,locals),tooltip.$el.data("$ngControllerController",controller),tooltip.$el.children().data("$ngControllerController",controller)),$compile(tooltip.$el)(tooltip.scope),tooltip.scope.$reposition(),tooltip.scope.$apply(),tooltip.show()}},onMouseLeave=function(event){var $target,attrId,targetId;return event.stopPropagation(),$target=angular.element(event.target),targetId=null!=(attrId=$target.attr("data-annotation-id"))?parseInt(attrId,10):void 0,null!=targetId?clearTooltip():void 0},loadAnnotationPopup=function(annotation,anchor,isNew){var controller,locals,popup;return popup=new NGAnnotatePopup($rootScope.$new()),popup.scope.$isNew=isNew,popup.scope.$annotation=annotation,popup.scope.$readonly=options.readonly,popup.$anchor=anchor,popup.scope.onEditorShow=$scope.onEditorShow,popup.scope.onEditorHide=$scope.onEditorHide,popup.scope.$reject=function(){removeAnnotation(annotation.id,$scope.annotations),null!=$scope.onAnnotateDelete&&$scope.onAnnotateDelete(annotation),clearPopup()},popup.scope.$close=function(){null!=$scope.onAnnotate&&$scope.onAnnotate(popup.scope.$annotation),clearPopup()},popup.scope.$reposition=function(){var leftPos,paddingLeft;popup.positionTop(),paddingLeft=parseInt(element.css("padding-left")),leftPos=element.offset().left+paddingLeft-popup.$el.innerWidth()+LEFT_MARGIN,0>leftPos&&(leftPos=0),popup.positionLeft(leftPos)},activePopup=popup,locals={$scope:popup.scope,$template:popupTemplateData},popup.$el.html(locals.$template),popup.$el.appendTo("body"),options.popupController&&(controller=$controller(options.popupController,locals),popup.$el.data("$ngControllerController",controller),popup.$el.children().data("$ngControllerController",controller)),$compile(popup.$el)(popup.scope),popup.scope.$reposition(),popup.scope.$apply(),popup.show()},element.on("mouseenter","span",onMouseEnter),element.on("mouseleave","span",onMouseLeave),element.on("mouseup",function(event){var selection;return selection=window.getSelection(),selection.isCollapsed||options.readonly?selection.isCollapsed&&"SPAN"===event.target.nodeName?onClick(event):selection.isCollapsed?(clearTooltip(),clearPopup()):void 0:onSelect(event)})}}}})}).call(this);
+(function() {
+  var getAnnotationById, insertAt, ngAnnotate, parseAnnotations, sortAnnotationsByEndIndex;
+
+  ngAnnotate = angular.module("ngAnnotate", []);
+
+  insertAt = function(text, index, string) {
+    return text.substr(0, index) + string + text.substr(index);
+  };
+
+  sortAnnotationsByEndIndex = function(annotations) {
+    return annotations.sort(function(a, b) {
+      if (a.endIndex < b.endIndex) {
+        return -1;
+      } else if (a.endIndex > b.endIndex) {
+        return 1;
+      }
+      return 0;
+    });
+  };
+
+  parseAnnotations = function(text, annotations, indexOffset) {
+    var annotation, i, _i, _ref;
+    if (annotations == null) {
+      annotations = [];
+    }
+    if (indexOffset == null) {
+      indexOffset = 0;
+    }
+    if (annotations.length === 0) {
+      return text;
+    }
+    annotations = sortAnnotationsByEndIndex(annotations);
+    for (i = _i = _ref = annotations.length - 1; _i >= 0; i = _i += -1) {
+      annotation = annotations[i];
+      text = insertAt(text, annotation.endIndex + indexOffset, "</span>");
+      if (annotation.children.length) {
+        text = parseAnnotations(text, annotation.children, annotation.startIndex + indexOffset);
+      }
+      text = insertAt(text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-annotation ng-annotate-" + annotation.id + " ng-annotate-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">");
+    }
+    return text;
+  };
+
+  getAnnotationById = function(annotations, aId) {
+    var a, an, _i, _len;
+    for (_i = 0, _len = annotations.length; _i < _len; _i++) {
+      a = annotations[_i];
+      if (aId === a.id) {
+        return a;
+      }
+      if (a.children.length > 0) {
+        an = getAnnotationById(a.children, aId);
+        if (an !== void 0) {
+          return an;
+        }
+      }
+    }
+  };
+
+  ngAnnotate.factory("NGAnnotatePopup", function() {
+    return function(args) {
+      args = angular.extend({
+        scope: null,
+        callbacks: {},
+        template: "<div/>",
+        $anchor: null,
+        preferredAxis: 'x',
+        offset: 0,
+        positionClass: '{{position}}'
+      }, args);
+      return angular.extend(this, args, {
+        $el: angular.element(args.template),
+        show: function(speed) {
+          if (speed == null) {
+            speed = "fast";
+          }
+          this.$el.fadeIn(speed);
+          this.reposition();
+          if (typeof this.callbacks.show === "function") {
+            return this.callbacks.show(this.$el);
+          }
+        },
+        hide: function(speed) {
+          if (speed == null) {
+            speed = "fast";
+          }
+          this.$el.fadeOut(speed);
+          if (typeof this.callbacks.hide === "function") {
+            return this.callbacks.hide(this.$el);
+          }
+        },
+        isVisible: function() {
+          return this.$el.is(":visible");
+        },
+        destroy: function(cb) {
+          var $el, scope;
+          if (cb == null) {
+            cb = angular.noop;
+          }
+          scope = this.scope;
+          $el = this.$el;
+          return this.hide(function() {
+            if (typeof cb === "function") {
+              cb();
+            }
+            scope.$destroy();
+            return $el.remove();
+          });
+        },
+        stopDestroy: function() {
+          return this.$el.stop(true).show("fast");
+        },
+        reposition: function() {
+          var anchorEl, pos, posX, posY, targetEl;
+          targetEl = this.$el[0];
+          anchorEl = this.$anchor[0];
+          if (!(targetEl || anchorEl)) {
+            return;
+          }
+          pos = {
+            left: null,
+            top: null,
+            target: targetEl.getBoundingClientRect(),
+            anchor: anchorEl.getBoundingClientRect(),
+            viewport: {
+              width: window.innerWidth,
+              height: window.innerHeight
+            },
+            scroll: {
+              top: document.body.scrollTop,
+              left: document.body.scrollLeft
+            }
+          };
+          if (!(pos.target.width > 0 && pos.target.height > 0)) {
+            return;
+          }
+          posX = this.getNewPositionOnAxis(pos, 'x');
+          posY = this.getNewPositionOnAxis(pos, 'y');
+          if (this.preferredAxis === 'x') {
+            if (posX && typeof posX.pos === 'number') {
+              pos.left = posX.pos;
+              pos.edge = posX.edge;
+            } else if (posY) {
+              pos.top = posY.pos;
+              pos.edge = posY.edge;
+            }
+          } else {
+            if (posY && typeof posY.pos === 'number') {
+              pos.top = posY.pos;
+              pos.edge = posY.edge;
+            } else if (posX) {
+              pos.left = posX.pos;
+              pos.edge = posX.edge;
+            }
+          }
+          if (pos.left === null && pos.top === null) {
+            pos.left = pos.scroll.left + (pos.viewport.width / 2) - (pos.target.width / 2);
+            pos.top = pos.scroll.top + (pos.viewport.height / 2) - (pos.target.height / 2);
+          } else if (pos.left === null) {
+            pos.left = this.getNewCenterPositionOnAxis(pos, 'x');
+          } else if (pos.top === null) {
+            pos.top = this.getNewCenterPositionOnAxis(pos, 'y');
+          }
+          this.$el.addClass(pos.edge && this.positionClass.replace("{{position}}", pos.edge)).css({
+            top: Math.round(pos.top) || 0,
+            left: Math.round(pos.left) || 0
+          });
+        },
+        getNewPositionOnAxis: function(pos, axis) {
+          var axisPos, end, size, start;
+          start = {
+            x: 'left',
+            y: 'top'
+          }[axis];
+          end = {
+            x: 'right',
+            y: 'bottom'
+          }[axis];
+          size = {
+            x: 'width',
+            y: 'height'
+          }[axis];
+          if (pos.anchor[start] - this.offset >= pos.target[size]) {
+            axisPos = {
+              pos: pos.scroll[start] + pos.anchor[start] - this.offset - pos.target[size],
+              edge: start
+            };
+          } else if (pos.viewport[size] - pos.anchor[end] - this.offset >= pos.target[size]) {
+            axisPos = {
+              pos: pos.scroll[start] + pos.anchor[end] + this.offset,
+              edge: end
+            };
+          }
+          return axisPos;
+        },
+        getNewCenterPositionOnAxis: function(pos, axis) {
+          var centerPos, size, start;
+          start = {
+            x: 'left',
+            y: 'top'
+          }[axis];
+          size = {
+            x: 'width',
+            y: 'height'
+          }[axis];
+          centerPos = pos.scroll[start] + pos.anchor[start] + (pos.anchor[size] / 2) - (pos.target[size] / 2);
+          return Math.max(pos.scroll[start] + this.offset, Math.min(centerPos, pos.scroll[start] + pos.viewport[size] - pos.target[size] - this.offset));
+        }
+      });
+    };
+  });
+
+  ngAnnotate.factory("NGAnnotation", function() {
+    var Annotation;
+    Annotation = function(data) {
+      angular.extend(this, {
+        id: new Date().getTime(),
+        startIndex: null,
+        endIndex: null,
+        data: {
+          points: 0
+        },
+        type: "",
+        children: []
+      });
+      if (data != null) {
+        return angular.extend(this, data);
+      }
+    };
+    return Annotation;
+  });
+
+  ngAnnotate.directive("ngAnnotate", function($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup) {
+    return {
+      restrict: "E",
+      scope: {
+        text: "=",
+        annotations: "=",
+        options: "=",
+        onAnnotate: "=",
+        onAnnotateDelete: "=",
+        onAnnotateError: "=",
+        onEditorShow: "=",
+        onEditorHide: "=",
+        popupOffset: "="
+      },
+      template: "<p ng-bind-html=\"content\"></p>",
+      replace: true,
+      compile: function(tElement, tAttrs, transclude) {
+        return function($scope, element, attrs) {
+          var POPUP_OFFSET, activePopup, activeTooltip, clearPopup, clearSelection, clearTooltip, createAnnotation, loadAnnotationPopup, onAnnotationsChange, onClick, onMouseEnter, onMouseLeave, onSelect, options, popupTemplateData, removeAnnotation, removeChildren, tooltipTemplateData, _ref;
+          POPUP_OFFSET = (_ref = $scope.popupOffset) != null ? _ref : 10;
+          activePopup = null;
+          activeTooltip = null;
+          popupTemplateData = "";
+          tooltipTemplateData = "";
+          onAnnotationsChange = function() {
+            var t;
+            if (($scope.text == null) || !$scope.text.length) {
+              return;
+            }
+            t = parseAnnotations($scope.text, $scope.annotations);
+            return $scope.content = $sce.trustAsHtml(t);
+          };
+          $scope.$watch("text", onAnnotationsChange);
+          $scope.$watch("annotations", onAnnotationsChange, true);
+          options = {
+            readonly: false,
+            popupController: "",
+            popupTemplateUrl: "",
+            tooltipController: "",
+            tooltipTemplateUrl: ""
+          };
+          options = angular.extend(options, $scope.options);
+          clearPopup = function() {
+            var tId;
+            if (activePopup == null) {
+              return;
+            }
+            tId = activePopup.scope.$annotation.id;
+            return activePopup.destroy(function() {
+              if (activePopup.scope.$annotation.id === tId) {
+                return activePopup = null;
+              }
+            });
+          };
+          clearTooltip = function() {
+            var tooltip;
+            tooltip = activeTooltip;
+            if (tooltip == null) {
+              return;
+            }
+            return tooltip.destroy(function() {
+              if (activeTooltip === tooltip) {
+                return activeTooltip = null;
+              }
+            });
+          };
+          $scope.$on("$destroy", function() {
+            clearPopup();
+            return clearTooltip();
+          });
+          if (options.popupTemplateUrl) {
+            $http.get(options.popupTemplateUrl).then(function(response) {
+              return popupTemplateData = response.data;
+            });
+          }
+          if (options.tooltipTemplateUrl) {
+            $http.get(options.tooltipTemplateUrl).then(function(response) {
+              return tooltipTemplateData = response.data;
+            });
+          }
+          removeChildren = function(annotation) {
+            var a, i, _i, _ref1, _results;
+            _results = [];
+            for (i = _i = _ref1 = annotation.children.length - 1; _i >= 0; i = _i += -1) {
+              a = annotation.children[i];
+              removeChildren(a);
+              _results.push(a.children.splice(i, 1));
+            }
+            return _results;
+          };
+          removeAnnotation = function(id, annotations) {
+            var a, i, _i, _len;
+            for (i = _i = 0, _len = annotations.length; _i < _len; i = ++_i) {
+              a = annotations[i];
+              removeAnnotation(id, a.children);
+              if (a.id === id) {
+                removeChildren(a);
+                annotations.splice(i, 1);
+                return;
+              }
+            }
+          };
+          createAnnotation = function() {
+            var annotation, annotationParentCollection, attrId, parentAnnotation, parentId, prevAnnotation, prevSiblingId, prevSiblingSpan, range, sel;
+            annotation = new NGAnnotation();
+            sel = window.getSelection();
+            if (sel.isCollapsed) {
+              throw new Error("NG_ANNOTATE_NO_TEXT_SELECTED");
+            }
+            range = sel.getRangeAt(0);
+            if (range.startContainer !== range.endContainer) {
+              throw new Error("NG_ANNOTATE_PARTIAL_NODE_SELECTED");
+            }
+            if (range.startContainer.parentNode.nodeName === "SPAN") {
+              parentId = (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
+              if (parentId === void 0) {
+                throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");
+              }
+              parentAnnotation = getAnnotationById($scope.annotations, parentId);
+              annotationParentCollection = parentAnnotation.children;
+            } else {
+              annotationParentCollection = $scope.annotations;
+            }
+            if (annotationParentCollection.length) {
+              prevSiblingSpan = range.startContainer.previousSibling;
+              if (prevSiblingSpan != null) {
+                prevSiblingId = (attrId = prevSiblingSpan.getAttribute("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
+                if (prevSiblingId == null) {
+                  throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");
+                }
+                prevAnnotation = getAnnotationById($scope.annotations, prevSiblingId);
+                annotation.startIndex = prevAnnotation.endIndex + range.startOffset;
+                annotation.endIndex = prevAnnotation.endIndex + range.endOffset;
+              } else {
+                annotation.startIndex = range.startOffset;
+                annotation.endIndex = range.endOffset;
+              }
+            } else {
+              annotation.startIndex = range.startOffset;
+              annotation.endIndex = range.endOffset;
+            }
+            annotationParentCollection.push(annotation);
+            clearSelection();
+            return annotation;
+          };
+          clearSelection = function() {
+            if (document.selection) {
+              return document.selection.empty();
+            } else if (window.getSelection && window.getSelection().empty) {
+              return window.getSelection().empty();
+            } else if (window.getSelection && window.getSelection().removeAllRanges) {
+              return window.getSelection().removeAllRanges();
+            }
+          };
+          onSelect = function(event) {
+            var $span, annotation, ex;
+            if (popupTemplateData.length === 0) {
+              return;
+            }
+            try {
+              annotation = createAnnotation();
+              $scope.$apply();
+              $span = element.find(".ng-annotate-" + annotation.id);
+            } catch (_error) {
+              ex = _error;
+              if ($scope.onAnnotateError != null) {
+                $scope.onAnnotateError(ex);
+              }
+              return;
+            }
+            clearPopup();
+            clearTooltip();
+            return loadAnnotationPopup(annotation, $span, true);
+          };
+          onClick = function(event) {
+            var $target, annotation, attrId, targetId;
+            if (popupTemplateData.length === 0) {
+              return;
+            }
+            $target = angular.element(event.target);
+            targetId = (attrId = $target.attr("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
+            if (targetId == null) {
+              return;
+            }
+            if ((activePopup != null) && activePopup.scope.$annotation.id === targetId) {
+              clearPopup();
+              return;
+            }
+            annotation = getAnnotationById($scope.annotations, targetId);
+            clearPopup();
+            clearTooltip();
+            return loadAnnotationPopup(annotation, $target, false);
+          };
+          onMouseEnter = function(event) {
+            var $target, annotation, attrId, controller, locals, targetId, tooltip;
+            if (tooltipTemplateData.length === 0) {
+              return;
+            }
+            event.stopPropagation();
+            $target = angular.element(event.target);
+            targetId = (attrId = $target.attr("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
+            if ((activeTooltip != null) && activeTooltip.scope.$annotation.id === targetId) {
+              activeTooltip.stopDestroy();
+              return;
+            } else {
+              clearTooltip();
+            }
+            if (targetId == null) {
+              return;
+            }
+            annotation = getAnnotationById($scope.annotations, targetId);
+            if (activePopup != null) {
+              return;
+            }
+            tooltip = new NGAnnotatePopup({
+              scope: $rootScope.$new(),
+              template: "<div class='ng-annotate-tooltip' />",
+              positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}",
+              $anchor: $target,
+              preferredAxis: 'y',
+              offset: POPUP_OFFSET
+            });
+            tooltip.scope.$annotation = annotation;
+            activeTooltip = tooltip;
+            locals = {
+              $scope: tooltip.scope,
+              $template: tooltipTemplateData
+            };
+            tooltip.$el.html(locals.$template);
+            tooltip.$el.appendTo("body");
+            if (options.tooltipController) {
+              controller = $controller(options.tooltipController, locals);
+              tooltip.$el.data("$ngControllerController", controller);
+              tooltip.$el.children().data("$ngControllerController", controller);
+            }
+            $compile(tooltip.$el)(tooltip.scope);
+            tooltip.scope.$apply();
+            return tooltip.show();
+          };
+          onMouseLeave = function(event) {
+            var $target, attrId, targetId;
+            event.stopPropagation();
+            $target = angular.element(event.target);
+            targetId = (attrId = $target.attr("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
+            if (targetId == null) {
+              return;
+            }
+            return clearTooltip();
+          };
+          loadAnnotationPopup = function(annotation, anchor, isNew) {
+            var controller, locals, popup;
+            popup = new NGAnnotatePopup({
+              scope: $rootScope.$new(),
+              callbacks: {
+                show: $scope.onEditorShow,
+                hide: $scope.onEditorHide
+              },
+              template: "<div class='ng-annotate-popup' />",
+              positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}",
+              $anchor: anchor,
+              offset: POPUP_OFFSET
+            });
+            popup.scope.$isNew = isNew;
+            popup.scope.$annotation = annotation;
+            popup.scope.$readonly = options.readonly;
+            popup.scope.$reject = function() {
+              removeAnnotation(annotation.id, $scope.annotations);
+              if ($scope.onAnnotateDelete != null) {
+                $scope.onAnnotateDelete(annotation);
+              }
+              clearPopup();
+            };
+            popup.scope.$close = function() {
+              if ($scope.onAnnotate != null) {
+                $scope.onAnnotate(popup.scope.$annotation);
+              }
+              clearPopup();
+            };
+            activePopup = popup;
+            locals = {
+              $scope: popup.scope,
+              $template: popupTemplateData
+            };
+            popup.$el.html(locals.$template);
+            popup.$el.appendTo("body");
+            if (options.popupController) {
+              controller = $controller(options.popupController, locals);
+              popup.$el.data("$ngControllerController", controller);
+              popup.$el.children().data("$ngControllerController", controller);
+            }
+            $compile(popup.$el)(popup.scope);
+            popup.scope.$apply();
+            return popup.show();
+          };
+          element.on("mouseenter", "span", onMouseEnter);
+          element.on("mouseleave", "span", onMouseLeave);
+          return element.on("mouseup", function(event) {
+            var selection;
+            selection = window.getSelection();
+            if (!selection.isCollapsed && !options.readonly) {
+              return onSelect(event);
+            } else if (selection.isCollapsed && event.target.nodeName === "SPAN") {
+              return onClick(event);
+            } else if (selection.isCollapsed) {
+              clearTooltip();
+              return clearPopup();
+            }
+          });
+        };
+      }
+    };
+  });
+
+}).call(this);
+
 //# sourceMappingURL=ng-annotate-latest.js.map
