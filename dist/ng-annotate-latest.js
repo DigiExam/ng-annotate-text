@@ -240,8 +240,8 @@
         onAnnotate: "=",
         onAnnotateDelete: "=",
         onAnnotateError: "=",
-        onEditorShow: "=",
-        onEditorHide: "=",
+        onPopupShow: "=",
+        onPopupHide: "=",
         popupOffset: "="
       },
       template: "<p ng-bind-html=\"content\"></p>",
@@ -441,7 +441,7 @@
               return;
             }
             annotation = getAnnotationById($scope.annotations, targetId);
-            if (activePopup != null) {
+            if ((activePopup != null) || (!annotation.data.comment && !annotation.data.points)) {
               return;
             }
             tooltip = new NGAnnotatePopup({
@@ -484,8 +484,8 @@
             popup = new NGAnnotatePopup({
               scope: $rootScope.$new(),
               callbacks: {
-                show: $scope.onEditorShow,
-                hide: $scope.onEditorHide
+                show: $scope.onPopupShow,
+                hide: $scope.onPopupHide
               },
               template: "<div class='ng-annotate-popup' />",
               positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}",

@@ -89,6 +89,8 @@
       display: table; }
     .ng-annotate-popup-group::after {
       clear: both; }
+    .ng-annotate-popup-group :last-child {
+      margin-bottom: 0; }
   .ng-annotate-popup-actions {
     margin-top: 15px; }
   .ng-annotate-popup-label {

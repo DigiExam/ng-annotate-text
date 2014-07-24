@@ -374,8 +374,9 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 					annotation = getAnnotationById $scope.annotations, targetId
 
-					# We don't want to show the tooltip if a popup with the annotation is open
-					if activePopup?
+					# We don't want to show the tooltip if a popup with the annotation is open,
+					# or if the tooltip has both no comment and points
+					if activePopup? or (not annotation.data.comment and not annotation.data.points)
 						return
 
 					tooltip = new NGAnnotatePopup
