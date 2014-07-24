@@ -174,309 +174,306 @@ ngAnnotate.factory "NGAnnotation", ->
 	return Annotation
 
 ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup)->
-	return {
-		restrict: "E"
-		scope:
-			text: "="
-			annotations: "="
-			options: "="
-			onAnnotate: "="
-			onAnnotateDelete: "="
-			onAnnotateError: "="
-			onPopupShow: "="
-			onPopupHide: "="
-			popupOffset: "="
-		template: "<p ng-bind-html=\"content\"></p>"
-		replace: true
-		compile: (tElement, tAttrs, transclude)->
-			($scope, element, attrs)->
-				POPUP_OFFSET = $scope.popupOffset ? 10
+	restrict: "E"
+	scope:
+		text: "="
+		annotations: "="
+		options: "="
+		onAnnotate: "="
+		onAnnotateDelete: "="
+		onAnnotateError: "="
+		onPopupShow: "="
+		onPopupHide: "="
+		popupOffset: "="
+	template: "<p ng-bind-html=\"content\"></p>"
+	replace: true
+	link: ($scope, element, attrs) ->
+		POPUP_OFFSET = $scope.popupOffset ? 10
 
-				activePopup = null
-				activeTooltip = null
+		activePopup = null
+		activeTooltip = null
 
-				# Cache the template when we fetch it
-				popupTemplateData = ""
-				tooltipTemplateData = ""
+		# Cache the template when we fetch it
+		popupTemplateData = ""
+		tooltipTemplateData = ""
 
-				onAnnotationsChange = ->
-					if not $scope.text? or !$scope.text.length
-						return
-					t = parseAnnotations $scope.text, $scope.annotations
-					$scope.content = $sce.trustAsHtml t
+		onAnnotationsChange = ->
+			if not $scope.text? or !$scope.text.length
+				return
+			t = parseAnnotations $scope.text, $scope.annotations
+			$scope.content = $sce.trustAsHtml t
 
-				# Annotation parsing
-				$scope.$watch "text", onAnnotationsChange
-				$scope.$watch "annotations", onAnnotationsChange, true
+		# Annotation parsing
+		$scope.$watch "text", onAnnotationsChange
+		$scope.$watch "annotations", onAnnotationsChange, true
 
-				# Setting options
-				options =
-					readonly: false
-					popupController: ""
-					popupTemplateUrl: ""
-					tooltipController: ""
-					tooltipTemplateUrl: ""
-				options = angular.extend options, $scope.options
+		# Setting options
+		options =
+			readonly: false
+			popupController: ""
+			popupTemplateUrl: ""
+			tooltipController: ""
+			tooltipTemplateUrl: ""
+		options = angular.extend options, $scope.options
 
-				clearPopup = ->
-					if not activePopup?
-						return
-					tId = activePopup.scope.$annotation.id
-					activePopup.destroy ->
-						if activePopup.scope.$annotation.id is tId
-							activePopup = null
+		clearPopup = ->
+			if not activePopup?
+				return
+			tId = activePopup.scope.$annotation.id
+			activePopup.destroy ->
+				if activePopup.scope.$annotation.id is tId
+					activePopup = null
 
-				clearTooltip = ->
-					tooltip = activeTooltip
-					if not tooltip?
-						return
-					tooltip.destroy ->
-						if activeTooltip is tooltip
-							activeTooltip = null
+		clearTooltip = ->
+			tooltip = activeTooltip
+			if not tooltip?
+				return
+			tooltip.destroy ->
+				if activeTooltip is tooltip
+					activeTooltip = null
 
-				$scope.$on "$destroy", ->
-					clearPopup()
-					clearTooltip()
+		$scope.$on "$destroy", ->
+			clearPopup()
+			clearTooltip()
 
-				if options.popupTemplateUrl
-					$http.get(options.popupTemplateUrl).then (response)->
-						popupTemplateData = response.data
+		if options.popupTemplateUrl
+			$http.get(options.popupTemplateUrl).then (response)->
+				popupTemplateData = response.data
 
-				if options.tooltipTemplateUrl
-					$http.get(options.tooltipTemplateUrl).then (response)->
-						tooltipTemplateData = response.data
+		if options.tooltipTemplateUrl
+			$http.get(options.tooltipTemplateUrl).then (response)->
+				tooltipTemplateData = response.data
 
-				removeChildren = (annotation)->
-					for i in [annotation.children.length - 1..0] by -1
-						a = annotation.children[i]
-						removeChildren a
-						a.children.splice i, 1
+		removeChildren = (annotation)->
+			for i in [annotation.children.length - 1..0] by -1
+				a = annotation.children[i]
+				removeChildren a
+				a.children.splice i, 1
 
-				removeAnnotation = (id, annotations)->
-					for a, i in annotations
-						removeAnnotation id, a.children
+		removeAnnotation = (id, annotations)->
+			for a, i in annotations
+				removeAnnotation id, a.children
 
-						if a.id is id
-							removeChildren a
-							annotations.splice i, 1
-							return
+				if a.id is id
+					removeChildren a
+					annotations.splice i, 1
+					return
 
-				createAnnotation = ->
-					annotation = new NGAnnotation()
-					sel = window.getSelection()
+		createAnnotation = ->
+			annotation = new NGAnnotation()
+			sel = window.getSelection()
 
-					if sel.isCollapsed
-						throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
+			if sel.isCollapsed
+				throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
 
-					range = sel.getRangeAt 0
+			range = sel.getRangeAt 0
 
-					if range.startContainer isnt range.endContainer
-						throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
+			if range.startContainer isnt range.endContainer
+				throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
 
-					if range.startContainer.parentNode.nodeName is "SPAN" # Is a child annotation
-						parentId = if (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
-						if parentId is undefined
-							throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
-						parentAnnotation = getAnnotationById $scope.annotations, parentId
+			if range.startContainer.parentNode.nodeName is "SPAN" # Is a child annotation
+				parentId = if (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+				if parentId is undefined
+					throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+				parentAnnotation = getAnnotationById $scope.annotations, parentId
 
-						annotationParentCollection = parentAnnotation.children
-					else
-						annotationParentCollection = $scope.annotations
+				annotationParentCollection = parentAnnotation.children
+			else
+				annotationParentCollection = $scope.annotations
 
-					# Does this selection has any siblings?
-					if annotationParentCollection.length
-						# Yup, find the previous sibling
-						prevSiblingSpan = range.startContainer.previousSibling
-						if prevSiblingSpan?
-							prevSiblingId = if (attrId = prevSiblingSpan.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
-							if not prevSiblingId?
-								throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
-							
-							prevAnnotation = getAnnotationById $scope.annotations, prevSiblingId
-							annotation.startIndex = prevAnnotation.endIndex + range.startOffset
-							annotation.endIndex = prevAnnotation.endIndex + range.endOffset
-						else
-							# Doesn't have a prev sibling, alrighty then
-							annotation.startIndex = range.startOffset
-							annotation.endIndex = range.endOffset
-					else
-						# Nope
-						annotation.startIndex = range.startOffset
-						annotation.endIndex = range.endOffset
+			# Does this selection has any siblings?
+			if annotationParentCollection.length
+				# Yup, find the previous sibling
+				prevSiblingSpan = range.startContainer.previousSibling
+				if prevSiblingSpan?
+					prevSiblingId = if (attrId = prevSiblingSpan.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
+					if not prevSiblingId?
+						throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
 
-					annotationParentCollection.push annotation
-					clearSelection()
-					return annotation
+					prevAnnotation = getAnnotationById $scope.annotations, prevSiblingId
+					annotation.startIndex = prevAnnotation.endIndex + range.startOffset
+					annotation.endIndex = prevAnnotation.endIndex + range.endOffset
+				else
+					# Doesn't have a prev sibling, alrighty then
+					annotation.startIndex = range.startOffset
+					annotation.endIndex = range.endOffset
+			else
+				# Nope
+				annotation.startIndex = range.startOffset
+				annotation.endIndex = range.endOffset
 
-				clearSelection = ->
-					if document.selection
-						document.selection.empty() # Internet Explorer
-					else if window.getSelection and window.getSelection().empty
-						window.getSelection().empty() # Chrome
-					else if window.getSelection and window.getSelection().removeAllRanges
-						window.getSelection().removeAllRanges() # Firefox
+			annotationParentCollection.push annotation
+			clearSelection()
+			return annotation
 
-				onSelect = (event)->
-					if popupTemplateData.length is 0
-						return
+		clearSelection = ->
+			if document.selection
+				document.selection.empty() # Internet Explorer
+			else if window.getSelection and window.getSelection().empty
+				window.getSelection().empty() # Chrome
+			else if window.getSelection and window.getSelection().removeAllRanges
+				window.getSelection().removeAllRanges() # Firefox
 
-					try
-						annotation = createAnnotation()
-						$scope.$apply()
-						$span = element.find ".ng-annotate-" + annotation.id
-					catch ex
-						if $scope.onAnnotateError?
-							$scope.onAnnotateError ex
+		onSelect = (event)->
+			if popupTemplateData.length is 0
+				return
 
-						return
+			try
+				annotation = createAnnotation()
+				$scope.$apply()
+				$span = element.find ".ng-annotate-" + annotation.id
+			catch ex
+				if $scope.onAnnotateError?
+					$scope.onAnnotateError ex
 
-					clearPopup()
-					clearTooltip()
+				return
 
-					loadAnnotationPopup annotation, $span, true
+			clearPopup()
+			clearTooltip()
 
-				onClick = (event)->					
-					if popupTemplateData.length is 0
-						return
+			loadAnnotationPopup annotation, $span, true
 
-					$target = angular.element event.target
-					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
+		onClick = (event)->
+			if popupTemplateData.length is 0
+				return
 
-					if not targetId?
-						return
+			$target = angular.element event.target
+			targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
-					if activePopup? and activePopup.scope.$annotation.id is targetId
-						clearPopup()
-						return
-					annotation = getAnnotationById $scope.annotations, targetId
+			if not targetId?
+				return
 
-					clearPopup()
-					clearTooltip()
+			if activePopup? and activePopup.scope.$annotation.id is targetId
+				clearPopup()
+				return
+			annotation = getAnnotationById $scope.annotations, targetId
 
-					loadAnnotationPopup annotation, $target, false
+			clearPopup()
+			clearTooltip()
 
-				onMouseEnter = (event)->
-					if tooltipTemplateData.length is 0
-						return
+			loadAnnotationPopup annotation, $target, false
 
-					event.stopPropagation()
-					$target = angular.element event.target
-					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
+		onMouseEnter = (event)->
+			if tooltipTemplateData.length is 0
+				return
 
-					if activeTooltip? and activeTooltip.scope.$annotation.id is targetId
-						activeTooltip.stopDestroy()
-						return
-					else
-						clearTooltip()
+			event.stopPropagation()
+			$target = angular.element event.target
+			targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
-					if not targetId?
-						return
+			if activeTooltip? and activeTooltip.scope.$annotation.id is targetId
+				activeTooltip.stopDestroy()
+				return
+			else
+				clearTooltip()
 
-					annotation = getAnnotationById $scope.annotations, targetId
+			if not targetId?
+				return
 
-					# We don't want to show the tooltip if a popup with the annotation is open,
-					# or if the tooltip has both no comment and points
-					if activePopup? or (not annotation.data.comment and not annotation.data.points)
-						return
+			annotation = getAnnotationById $scope.annotations, targetId
 
-					tooltip = new NGAnnotatePopup
-						scope: $rootScope.$new()
-						template: "<div class='ng-annotate-tooltip' />"
-						positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}"
-						$anchor: $target
-						preferredAxis: 'y'
-						offset: POPUP_OFFSET
-					tooltip.scope.$annotation = annotation
+			# We don't want to show the tooltip if a popup with the annotation is open,
+			# or if the tooltip has both no comment and points
+			if activePopup? or (not annotation.data.comment and not annotation.data.points)
+				return
 
-					activeTooltip = tooltip
+			tooltip = new NGAnnotatePopup
+				scope: $rootScope.$new()
+				template: "<div class='ng-annotate-tooltip' />"
+				positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}"
+				$anchor: $target
+				preferredAxis: 'y'
+				offset: POPUP_OFFSET
+			tooltip.scope.$annotation = annotation
 
-					locals =
-						$scope: tooltip.scope
-						$template: tooltipTemplateData
+			activeTooltip = tooltip
 
-					tooltip.$el.html locals.$template
-					tooltip.$el.appendTo "body"
+			locals =
+				$scope: tooltip.scope
+				$template: tooltipTemplateData
 
-					if options.tooltipController
-						controller = $controller options.tooltipController, locals
-						tooltip.$el.data "$ngControllerController", controller
-						tooltip.$el.children().data "$ngControllerController", controller
+			tooltip.$el.html locals.$template
+			tooltip.$el.appendTo "body"
 
-					$compile(tooltip.$el) tooltip.scope
-					tooltip.scope.$apply()
-					tooltip.show()
+			if options.tooltipController
+				controller = $controller options.tooltipController, locals
+				tooltip.$el.data "$ngControllerController", controller
+				tooltip.$el.children().data "$ngControllerController", controller
 
-				onMouseLeave = (event)->
-					event.stopPropagation()
+			$compile(tooltip.$el) tooltip.scope
+			tooltip.scope.$apply()
+			tooltip.show()
 
-					$target = angular.element event.target
-					targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
+		onMouseLeave = (event)->
+			event.stopPropagation()
 
-					if not targetId?
-						return
+			$target = angular.element event.target
+			targetId = if (attrId = $target.attr("data-annotation-id"))? then parseInt(attrId, 10)
 
-					clearTooltip()
+			if not targetId?
+				return
 
-				loadAnnotationPopup = (annotation, anchor, isNew)->
-					popup = new NGAnnotatePopup
-						scope: $rootScope.$new()
-						callbacks:
-							show: $scope.onPopupShow
-							hide: $scope.onPopupHide
-						template: "<div class='ng-annotate-popup' />"
-						positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}"
-						$anchor: anchor
-						offset: POPUP_OFFSET
+			clearTooltip()
 
-					popup.scope.$isNew = isNew
-					popup.scope.$annotation = annotation
-					popup.scope.$readonly = options.readonly
+		loadAnnotationPopup = (annotation, anchor, isNew)->
+			popup = new NGAnnotatePopup
+				scope: $rootScope.$new()
+				callbacks:
+					show: $scope.onPopupShow
+					hide: $scope.onPopupHide
+				template: "<div class='ng-annotate-popup' />"
+				positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}"
+				$anchor: anchor
+				offset: POPUP_OFFSET
 
-					popup.scope.$reject = ->
-						removeAnnotation annotation.id, $scope.annotations
-						
-						if $scope.onAnnotateDelete?
-							$scope.onAnnotateDelete annotation
-						clearPopup()
-						return
+			popup.scope.$isNew = isNew
+			popup.scope.$annotation = annotation
+			popup.scope.$readonly = options.readonly
 
-					popup.scope.$close = ->
-						if $scope.onAnnotate?
-							$scope.onAnnotate popup.scope.$annotation
-						clearPopup()
-						return
+			popup.scope.$reject = ->
+				removeAnnotation annotation.id, $scope.annotations
 
-					activePopup = popup
+				if $scope.onAnnotateDelete?
+					$scope.onAnnotateDelete annotation
+				clearPopup()
+				return
 
-					locals = 
-						$scope: popup.scope
-						$template: popupTemplateData
+			popup.scope.$close = ->
+				if $scope.onAnnotate?
+					$scope.onAnnotate popup.scope.$annotation
+				clearPopup()
+				return
 
-					popup.$el.html locals.$template
-					popup.$el.appendTo "body"
-					
-					if options.popupController
-						controller = $controller options.popupController, locals
-						popup.$el.data "$ngControllerController", controller
-						popup.$el.children().data "$ngControllerController", controller
+			activePopup = popup
 
-					$compile(popup.$el) popup.scope
-					popup.scope.$apply()
-					popup.show()
+			locals =
+				$scope: popup.scope
+				$template: popupTemplateData
 
-				element.on "mouseenter", "span", onMouseEnter
-				element.on "mouseleave", "span", onMouseLeave
+			popup.$el.html locals.$template
+			popup.$el.appendTo "body"
 
-				element.on "mouseup", (event)->
-					# We need to determine if the user actually selected something
-					# or if he just clicked on an annotation
-					selection = window.getSelection()
-					if !selection.isCollapsed and !options.readonly
-						# User has selected something
-						onSelect event
-					else if selection.isCollapsed and event.target.nodeName is "SPAN"
-						onClick event
-					else if selection.isCollapsed
-						clearTooltip()
-						clearPopup()
-	}
+			if options.popupController
+				controller = $controller options.popupController, locals
+				popup.$el.data "$ngControllerController", controller
+				popup.$el.children().data "$ngControllerController", controller
+
+			$compile(popup.$el) popup.scope
+			popup.scope.$apply()
+			popup.show()
+
+		element.on "mouseenter", "span", onMouseEnter
+		element.on "mouseleave", "span", onMouseLeave
+
+		element.on "mouseup", (event)->
+			# We need to determine if the user actually selected something
+			# or if he just clicked on an annotation
+			selection = window.getSelection()
+			if !selection.isCollapsed and !options.readonly
+				# User has selected something
+				onSelect event
+			else if selection.isCollapsed and event.target.nodeName is "SPAN"
+				onClick event
+			else if selection.isCollapsed
+				clearTooltip()
+				clearPopup()
