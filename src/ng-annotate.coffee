@@ -183,8 +183,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			onAnnotate: "="
 			onAnnotateDelete: "="
 			onAnnotateError: "="
-			onEditorShow: "="
-			onEditorHide: "="
+			onPopupShow: "="
+			onPopupHide: "="
 			popupOffset: "="
 		template: "<p ng-bind-html=\"content\"></p>"
 		replace: true
@@ -420,8 +420,8 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 					popup = new NGAnnotatePopup
 						scope: $rootScope.$new()
 						callbacks:
-							show: $scope.onEditorShow
-							hide: $scope.onEditorHide
+							show: $scope.onPopupShow
+							hide: $scope.onPopupHide
 						template: "<div class='ng-annotate-popup' />"
 						positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}"
 						$anchor: anchor
