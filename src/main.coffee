@@ -80,7 +80,7 @@ angular.module("app", ["ngAnnotate"])
 			else
 				throw $ex
 
-		$scope.onEditorShow = ($el) ->
+		$scope.onPopupShow = ($el) ->
 			# Focus the first input or textarea
 			firstInput = $el.find("input, textarea").eq(0).focus()
 			firstInput && firstInput[0].select()
