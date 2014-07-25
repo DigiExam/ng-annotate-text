@@ -89,7 +89,7 @@
       display: table; }
     .ng-annotate-popup-group::after {
       clear: both; }
-    .ng-annotate-popup-group :last-child {
+    .ng-annotate-popup-group:last-child {
       margin-bottom: 0; }
   .ng-annotate-popup-actions {
     margin-top: 15px; }
@@ -224,7 +224,7 @@
     height: 22.5px;
     overflow: hidden;
     padding: 0;
-    text-indent: -9999px; }
+    text-indent: 9999px; }
   .ng-annotate-swatch-template {
     padding: 2.5px 5px; }
     .ng-annotate-swatch-template-name {

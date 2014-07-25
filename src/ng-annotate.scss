@@ -319,7 +319,7 @@ $type-colors: (
 			height: $swatch-color-height;
 			overflow: hidden;
 			padding: 0;
-			text-indent: -9999px;
+			text-indent: 9999px;
 		}
 
 		&-template {
