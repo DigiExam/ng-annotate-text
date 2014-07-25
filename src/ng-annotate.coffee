@@ -232,9 +232,12 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 				if activeTooltip is tooltip
 					activeTooltip = null
 
-		$scope.$on "$destroy", ->
+		clearPopups = ->
 			clearPopup()
 			clearTooltip()
+
+		$scope.$on "$destroy", clearPopups
+		$scope.$on "ngAnnotateText.clearPopups", clearPopups
 
 		if $scope.popupTemplateUrl
 			$http.get($scope.popupTemplateUrl).then (response)->
@@ -328,8 +331,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 
 				return
 
-			clearPopup()
-			clearTooltip()
+			clearPopups()
 
 			loadAnnotationPopup annotation, $span, true
 
@@ -348,8 +350,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 				return
 			annotation = getAnnotationById $scope.annotations, targetId
 
-			clearPopup()
-			clearTooltip()
+			clearPopups()
 
 			loadAnnotationPopup annotation, $target, false
 
@@ -475,5 +476,4 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			else if selection.isCollapsed and event.target.nodeName is "SPAN"
 				onClick event
 			else if selection.isCollapsed
-				clearTooltip()
-				clearPopup()
+				clearPopups()

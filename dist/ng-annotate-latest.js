@@ -257,7 +257,7 @@
         return this.postLink;
       },
       postLink: function($scope, element, attrs) {
-        var POPUP_OFFSET, activePopup, activeTooltip, clearPopup, clearSelection, clearTooltip, createAnnotation, loadAnnotationPopup, onAnnotationsChange, onClick, onMouseEnter, onMouseLeave, onSelect, popupTemplateData, removeAnnotation, removeChildren, tooltipTemplateData, _ref;
+        var POPUP_OFFSET, activePopup, activeTooltip, clearPopup, clearPopups, clearSelection, clearTooltip, createAnnotation, loadAnnotationPopup, onAnnotationsChange, onClick, onMouseEnter, onMouseLeave, onSelect, popupTemplateData, removeAnnotation, removeChildren, tooltipTemplateData, _ref;
         POPUP_OFFSET = (_ref = $scope.popupOffset) != null ? _ref : 10;
         activePopup = null;
         activeTooltip = null;
@@ -297,10 +297,12 @@
             }
           });
         };
-        $scope.$on("$destroy", function() {
+        clearPopups = function() {
           clearPopup();
           return clearTooltip();
-        });
+        };
+        $scope.$on("$destroy", clearPopups);
+        $scope.$on("ngAnnotateText.clearPopups", clearPopups);
         if ($scope.popupTemplateUrl) {
           $http.get($scope.popupTemplateUrl).then(function(response) {
             return popupTemplateData = response.data;
@@ -401,8 +403,7 @@
             }
             return;
           }
-          clearPopup();
-          clearTooltip();
+          clearPopups();
           return loadAnnotationPopup(annotation, $span, true);
         };
         onClick = function(event) {
@@ -420,8 +421,7 @@
             return;
           }
           annotation = getAnnotationById($scope.annotations, targetId);
-          clearPopup();
-          clearTooltip();
+          clearPopups();
           return loadAnnotationPopup(annotation, $target, false);
         };
         onMouseEnter = function(event) {
@@ -535,8 +535,7 @@
           } else if (selection.isCollapsed && event.target.nodeName === "SPAN") {
             return onClick(event);
           } else if (selection.isCollapsed) {
-            clearTooltip();
-            return clearPopup();
+            return clearPopups();
           }
         });
       }

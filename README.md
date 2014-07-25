@@ -14,6 +14,12 @@ Attribute | Default value | Description
 --- | --- | ---
 popup-offset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels.
 
+## Event listeners
+
+Event | Description
+--- | ---
+ngAnnotateText.clearPopups | Clears any open popup or tooltip
+
 ## Getting started with development
 
 1. Install NodeJS ([nodejs.org](http://nodejs.org/))
