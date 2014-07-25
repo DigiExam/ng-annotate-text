@@ -63,13 +63,6 @@ angular.module("app", ["ngAnnotate"])
 			]
 		]
 
-		$scope.options =
-			readonly: false
-			popupTemplateUrl: "partials/annotation.html"
-			popupController: "AnnotationController"
-			tooltipTemplateUrl: "partials/annotation-tooltip.html"
-			tooltipController: "AnnotationController"
-
 		$scope.onAnnotate = ($annotation) ->
 			console && console.log $annotation
 			return

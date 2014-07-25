@@ -37,7 +37,11 @@
 
 				<ng-annotate
 					class="example-source-text"
-					options="options"
+					readonly="false"
+					popup-controller="'AnnotationController'"
+					popup-template-url="'partials/annotation.html'"
+					tooltip-controller="'AnnotationController'"
+					tooltip-template-url="'partials/annotation-tooltip.html'"
 					annotations="annotations[$index]"
 					on-annotate="onAnnotate"
 					on-annotate-error="onAnnotateError"
