@@ -33,7 +33,7 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-ngAnnotateText.factory "ngAnnotateTextPopup", ->
+ngAnnotateText.factory "NGAnnotateTextPopup", ->
 	(args) ->
 		args = angular.extend {
 			scope: null,

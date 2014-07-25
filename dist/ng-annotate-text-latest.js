@@ -57,7 +57,7 @@
     }
   };
 
-  ngAnnotateText.factory("ngAnnotateTextPopup", function() {
+  ngAnnotateText.factory("NGAnnotateTextPopup", function() {
     return function(args) {
       args = angular.extend({
         scope: null,
