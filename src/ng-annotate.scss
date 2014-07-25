@@ -137,7 +137,7 @@ $type-colors: (
 			@include clearfix();
 			margin-bottom: $space;
 
-			:last-child {
+			&:last-child {
 				margin-bottom: 0;
 			}
 		}
