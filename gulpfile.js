@@ -8,7 +8,7 @@ var src = {
 	css: "src/*.scss",
 	lib: [
 		"bower_components/angular/angular.js",
-		"bower_components/jquery/dist/jquery.js",
+		"bower_components/jquery/jquery.js",
 		"bower_components/ng-annotate/dist/*latest.min*"
 	],
 	livereload: ["dist/*", "lib/*"]
