@@ -8,6 +8,6 @@
   "private": true,
   "devDependencies": {
     "jquery": "~1.10.2",
-    "ng-annotate": "DigiExam/ng-annotate#2.5.0-rc.3"
+    "ng-annotate": "DigiExam/ng-annotate#2.5.0-rc.4"
   }
 }

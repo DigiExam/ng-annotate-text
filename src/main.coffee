@@ -101,3 +101,6 @@ angular.module("app", ["ngAnnotate"])
 					.reduce((prev, current) ->
 						prev.concat current
 					)
+
+		$scope.clearPopups = ->
+			$scope.$broadcast "ngAnnotateText.clearPopups"
