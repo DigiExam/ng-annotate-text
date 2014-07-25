@@ -1,7 +1,7 @@
 (function() {
-  var getAnnotationById, insertAt, ngAnnotate, parseAnnotations, sortAnnotationsByEndIndex;
+  var getAnnotationById, insertAt, ngAnnotateText, parseAnnotations, sortAnnotationsByEndIndex;
 
-  ngAnnotate = angular.module("ngAnnotate", []);
+  ngAnnotateText = angular.module("ngAnnotateText", []);
 
   insertAt = function(text, index, string) {
     return text.substr(0, index) + string + text.substr(index);
@@ -36,7 +36,7 @@
       if (annotation.children.length) {
         text = parseAnnotations(text, annotation.children, annotation.startIndex + indexOffset);
       }
-      text = insertAt(text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-annotation ng-annotate-" + annotation.id + " ng-annotate-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">");
+      text = insertAt(text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-text-annotation ng-annotate-text-" + annotation.id + " ng-annotate-text-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">");
     }
     return text;
   };
@@ -57,7 +57,7 @@
     }
   };
 
-  ngAnnotate.factory("NGAnnotatePopup", function() {
+  ngAnnotateText.factory("ngAnnotateTextPopup", function() {
     return function(args) {
       args = angular.extend({
         scope: null,
@@ -210,7 +210,7 @@
     };
   });
 
-  ngAnnotate.factory("NGAnnotation", function() {
+  ngAnnotateText.factory("NGAnnotation", function() {
     var Annotation;
     Annotation = function(data) {
       angular.extend(this, {
@@ -230,7 +230,7 @@
     return Annotation;
   });
 
-  ngAnnotate.directive("ngAnnotate", function($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup) {
+  ngAnnotateText.directive("ngAnnotateText", function($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotateTextPopup) {
     return {
       restrict: "E",
       scope: {
@@ -340,16 +340,16 @@
           annotation = new NGAnnotation();
           sel = window.getSelection();
           if (sel.isCollapsed) {
-            throw new Error("NG_ANNOTATE_NO_TEXT_SELECTED");
+            throw new Error("NG_ANNOTATE_TEXT_NO_TEXT_SELECTED");
           }
           range = sel.getRangeAt(0);
           if (range.startContainer !== range.endContainer) {
-            throw new Error("NG_ANNOTATE_PARTIAL_NODE_SELECTED");
+            throw new Error("NG_ANNOTATE_TEXT_PARTIAL_NODE_SELECTED");
           }
           if (range.startContainer.parentNode.nodeName === "SPAN") {
             parentId = (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
             if (parentId === void 0) {
-              throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");
+              throw new Error("NG_ANNOTATE_TEXT_ILLEGAL_SELECTION");
             }
             parentAnnotation = getAnnotationById($scope.annotations, parentId);
             annotationParentCollection = parentAnnotation.children;
@@ -361,7 +361,7 @@
             if (prevSiblingSpan != null) {
               prevSiblingId = (attrId = prevSiblingSpan.getAttribute("data-annotation-id")) != null ? parseInt(attrId, 10) : void 0;
               if (prevSiblingId == null) {
-                throw new Error("NG_ANNOTATE_ILLEGAL_SELECTION");
+                throw new Error("NG_ANNOTATE_TEXT_ILLEGAL_SELECTION");
               }
               prevAnnotation = getAnnotationById($scope.annotations, prevSiblingId);
               annotation.startIndex = prevAnnotation.endIndex + range.startOffset;
@@ -395,7 +395,7 @@
           try {
             annotation = createAnnotation();
             $scope.$apply();
-            $span = element.find(".ng-annotate-" + annotation.id);
+            $span = element.find(".ng-annotate-text-" + annotation.id);
           } catch (_error) {
             ex = _error;
             if ($scope.onAnnotateError != null) {
@@ -445,10 +445,10 @@
           if ((activePopup != null) || (!annotation.data.comment && !annotation.data.points)) {
             return;
           }
-          tooltip = new NGAnnotatePopup({
+          tooltip = new NGAnnotateTextPopup({
             scope: $rootScope.$new(),
-            template: "<div class='ng-annotate-tooltip' />",
-            positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}",
+            template: "<div class='ng-annotate-text-tooltip' />",
+            positionClass: "ng-annotate-text-tooltip-docked ng-annotate-text-tooltip-docked-{{position}}",
             $anchor: $target,
             preferredAxis: 'y',
             offset: POPUP_OFFSET
@@ -482,14 +482,14 @@
         };
         loadAnnotationPopup = function(annotation, anchor, isNew) {
           var controller, locals, popup;
-          popup = new NGAnnotatePopup({
+          popup = new NGAnnotateTextPopup({
             scope: $rootScope.$new(),
             callbacks: {
               show: $scope.onPopupShow,
               hide: $scope.onPopupHide
             },
-            template: "<div class='ng-annotate-popup' />",
-            positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}",
+            template: "<div class='ng-annotate-text-popup' />",
+            positionClass: "ng-annotate-text-popup-docked ng-annotate-text-popup-docked-{{position}}",
             $anchor: anchor,
             offset: POPUP_OFFSET
           });
@@ -544,4 +544,4 @@
 
 }).call(this);
 
-//# sourceMappingURL=ng-annotate-latest.js.map
+//# sourceMappingURL=ng-annotate-text-latest.js.map

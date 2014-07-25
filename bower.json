@@ -1,7 +1,7 @@
 {
-  "name": "ng-annotate",
-  "version": "2.5.0-rc.4",
-  "homepage": "https://github.com/DigiExam/ng-annotate",
+  "name": "ng-annotate-text",
+  "version": "2.5.0-rc.5",
+  "homepage": "https://github.com/DigiExam/ng-annotate-text",
   "authors": [
     "(Rasmus Milesson <rasmus.milesson@arcadelia.com>)",
     "(Robin Andersson <robin.andersson@digiexam.se>)",
@@ -15,8 +15,8 @@
   "license": "CC-BY-NC",
   "private": true,
   "main": [
-    "./dist/ng-annotate-latest.min.css",
-    "./dist/ng-annotate-latest.min.js"
+    "./dist/ng-annotate-text-latest.min.css",
+    "./dist/ng-annotate-text-latest.min.js"
   ],
   "ignore": [
     "node_modules",

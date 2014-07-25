@@ -1,4 +1,4 @@
-ngAnnotate = angular.module "ngAnnotate", []
+ngAnnotateText = angular.module "ngAnnotateText", []
 
 insertAt = (text, index, string)->
 	return text.substr(0, index) + string + text.substr(index)
@@ -21,7 +21,7 @@ parseAnnotations = (text, annotations = [], indexOffset = 0)->
 		text = insertAt text, annotation.endIndex + indexOffset, "</span>"
 		if annotation.children.length
 			text = parseAnnotations text, annotation.children, annotation.startIndex + indexOffset
-		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-annotation ng-annotate-" + annotation.id + " ng-annotate-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
+		text = insertAt text, annotation.startIndex + indexOffset, "<span class=\"ng-annotate-text-annotation ng-annotate-text-" + annotation.id + " ng-annotate-text-type-" + annotation.type + "\" data-annotation-id=\"" + annotation.id + "\">"
 	return text
 
 getAnnotationById = (annotations, aId)->
@@ -33,7 +33,7 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
-ngAnnotate.factory "NGAnnotatePopup", ->
+ngAnnotateText.factory "ngAnnotateTextPopup", ->
 	(args) ->
 		args = angular.extend {
 			scope: null,
@@ -157,7 +157,7 @@ ngAnnotate.factory "NGAnnotatePopup", ->
 				centerPos = pos.scroll[start] + pos.anchor[start] + (pos.anchor[size] / 2) - (pos.target[size] / 2)
 				Math.max(pos.scroll[start] + @offset, Math.min(centerPos, pos.scroll[start] + pos.viewport[size] - pos.target[size] - @offset))
 
-ngAnnotate.factory "NGAnnotation", ->
+ngAnnotateText.factory "NGAnnotation", ->
 	Annotation = (data)->
 
 		angular.extend @,
@@ -173,7 +173,7 @@ ngAnnotate.factory "NGAnnotation", ->
 
 	return Annotation
 
-ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotatePopup)->
+ngAnnotateText.directive "ngAnnotateText", ($rootScope, $compile, $http, $q, $controller, $sce, NGAnnotation, NGAnnotateTextPopup)->
 	restrict: "E"
 	scope:
 		text: "="
@@ -267,17 +267,17 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			sel = window.getSelection()
 
 			if sel.isCollapsed
-				throw new Error "NG_ANNOTATE_NO_TEXT_SELECTED"
+				throw new Error "NG_ANNOTATE_TEXT_NO_TEXT_SELECTED"
 
 			range = sel.getRangeAt 0
 
 			if range.startContainer isnt range.endContainer
-				throw new Error "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
+				throw new Error "NG_ANNOTATE_TEXT_PARTIAL_NODE_SELECTED"
 
 			if range.startContainer.parentNode.nodeName is "SPAN" # Is a child annotation
 				parentId = if (attrId = range.startContainer.parentNode.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
 				if parentId is undefined
-					throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+					throw new Error "NG_ANNOTATE_TEXT_ILLEGAL_SELECTION"
 				parentAnnotation = getAnnotationById $scope.annotations, parentId
 
 				annotationParentCollection = parentAnnotation.children
@@ -291,7 +291,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 				if prevSiblingSpan?
 					prevSiblingId = if (attrId = prevSiblingSpan.getAttribute("data-annotation-id"))? then parseInt(attrId, 10)
 					if not prevSiblingId?
-						throw new Error "NG_ANNOTATE_ILLEGAL_SELECTION"
+						throw new Error "NG_ANNOTATE_TEXT_ILLEGAL_SELECTION"
 
 					prevAnnotation = getAnnotationById $scope.annotations, prevSiblingId
 					annotation.startIndex = prevAnnotation.endIndex + range.startOffset
@@ -324,7 +324,7 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			try
 				annotation = createAnnotation()
 				$scope.$apply()
-				$span = element.find ".ng-annotate-" + annotation.id
+				$span = element.find ".ng-annotate-text-" + annotation.id
 			catch ex
 				if $scope.onAnnotateError?
 					$scope.onAnnotateError ex
@@ -378,10 +378,10 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			if activePopup? or (not annotation.data.comment and not annotation.data.points)
 				return
 
-			tooltip = new NGAnnotatePopup
+			tooltip = new NGAnnotateTextPopup
 				scope: $rootScope.$new()
-				template: "<div class='ng-annotate-tooltip' />"
-				positionClass: "ng-annotate-tooltip-docked ng-annotate-tooltip-docked-{{position}}"
+				template: "<div class='ng-annotate-text-tooltip' />"
+				positionClass: "ng-annotate-text-tooltip-docked ng-annotate-text-tooltip-docked-{{position}}"
 				$anchor: $target
 				preferredAxis: 'y'
 				offset: POPUP_OFFSET
@@ -417,13 +417,13 @@ ngAnnotate.directive "ngAnnotate", ($rootScope, $compile, $http, $q, $controller
 			clearTooltip()
 
 		loadAnnotationPopup = (annotation, anchor, isNew)->
-			popup = new NGAnnotatePopup
+			popup = new NGAnnotateTextPopup
 				scope: $rootScope.$new()
 				callbacks:
 					show: $scope.onPopupShow
 					hide: $scope.onPopupHide
-				template: "<div class='ng-annotate-popup' />"
-				positionClass: "ng-annotate-popup-docked ng-annotate-popup-docked-{{position}}"
+				template: "<div class='ng-annotate-text-popup' />"
+				positionClass: "ng-annotate-text-popup-docked ng-annotate-text-popup-docked-{{position}}"
 				$anchor: anchor
 				offset: POPUP_OFFSET
 

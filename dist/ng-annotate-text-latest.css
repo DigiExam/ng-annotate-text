@@ -1,34 +1,34 @@
-.ng-annotate-type- {
+.ng-annotate-text-type- {
   border-bottom: 1px solid #000; }
-.ng-annotate-type-red {
+.ng-annotate-text-type-red {
   color: #000;
   background: #fcbcbc;
   border-color: #fcbcbc; }
-.ng-annotate-type-green {
+.ng-annotate-text-type-green {
   color: #000;
   background: #c7fcbc;
   border-color: #c7fcbc; }
-.ng-annotate-type-blue {
+.ng-annotate-text-type-blue {
   color: #000;
   background: #bcdffc;
   border-color: #bcdffc; }
-.ng-annotate-type-pink {
+.ng-annotate-text-type-pink {
   color: #000;
   background: #fcbcfa;
   border-color: #fcbcfa; }
-.ng-annotate-type-yellow {
+.ng-annotate-text-type-yellow {
   color: #000;
   background: #f8f89b;
   border-color: #f8f89b; }
-.ng-annotate-type-aqua {
+.ng-annotate-text-type-aqua {
   color: #000;
   background: #bcfcf7;
   border-color: #bcfcf7; }
-.ng-annotate-type-strike {
+.ng-annotate-text-type-strike {
   text-decoration: line-through; }
-.ng-annotate-annotation {
+.ng-annotate-text-annotation {
   cursor: pointer; }
-.ng-annotate-popup {
+.ng-annotate-text-popup {
   display: none;
   position: absolute;
   z-index: 990;
@@ -41,12 +41,12 @@
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
   font: 13px/1.38462 "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-rendering: optimizelegibility; }
-  .ng-annotate-popup, .ng-annotate-popup * {
+  .ng-annotate-text-popup, .ng-annotate-text-popup * {
     -moz-box-sizing: border-box;
          box-sizing: border-box; }
-  .ng-annotate-popup label {
+  .ng-annotate-text-popup label {
     cursor: pointer; }
-  .ng-annotate-popup-docked::after {
+  .ng-annotate-text-popup-docked::after {
     content: "";
     position: absolute;
     z-index: 1;
@@ -56,48 +56,48 @@
     border-top: 1px solid rgba(0, 0, 0, 0.18);
     border-right: 1px solid rgba(0, 0, 0, 0.18);
     box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07); }
-  .ng-annotate-popup-docked-left::after, .ng-annotate-popup-docked-right::after {
+  .ng-annotate-text-popup-docked-left::after, .ng-annotate-text-popup-docked-right::after {
     top: 50%;
     margin-top: -5px; }
-  .ng-annotate-popup-docked-top::after, .ng-annotate-popup-docked-bottom::after {
+  .ng-annotate-text-popup-docked-top::after, .ng-annotate-text-popup-docked-bottom::after {
     left: 50%;
     margin-left: -5px; }
-  .ng-annotate-popup-docked-left::after {
+  .ng-annotate-text-popup-docked-left::after {
     -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
             transform: rotate(45deg);
     right: -6px; }
-  .ng-annotate-popup-docked-right::after {
+  .ng-annotate-text-popup-docked-right::after {
     -webkit-transform: rotate(-135deg);
         -ms-transform: rotate(-135deg);
             transform: rotate(-135deg);
     left: -6px; }
-  .ng-annotate-popup-docked-top::after {
+  .ng-annotate-text-popup-docked-top::after {
     -webkit-transform: rotate(135deg);
         -ms-transform: rotate(135deg);
             transform: rotate(135deg);
     bottom: -6px; }
-  .ng-annotate-popup-docked-bottom::after {
+  .ng-annotate-text-popup-docked-bottom::after {
     -webkit-transform: rotate(-45deg);
         -ms-transform: rotate(-45deg);
             transform: rotate(-45deg);
     top: -6px; }
-  .ng-annotate-popup-group {
+  .ng-annotate-text-popup-group {
     margin-bottom: 10px; }
-    .ng-annotate-popup-group::before, .ng-annotate-popup-group::after {
+    .ng-annotate-text-popup-group::before, .ng-annotate-text-popup-group::after {
       content: " ";
       display: table; }
-    .ng-annotate-popup-group::after {
+    .ng-annotate-text-popup-group::after {
       clear: both; }
-    .ng-annotate-popup-group:last-child {
+    .ng-annotate-text-popup-group:last-child {
       margin-bottom: 0; }
-  .ng-annotate-popup-actions {
+  .ng-annotate-text-popup-actions {
     margin-top: 15px; }
-  .ng-annotate-popup-label {
+  .ng-annotate-text-popup-label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px; }
-  .ng-annotate-popup-field {
+  .ng-annotate-text-popup-field {
     display: block;
     -moz-box-sizing: border-box;
          box-sizing: border-box;
@@ -108,24 +108,24 @@
     border: 1px solid #cccccc;
     border-radius: 3px;
     font-size: inherit; }
-  .ng-annotate-popup-points {
+  .ng-annotate-text-popup-points {
     display: table;
     width: 100%; }
-  .ng-annotate-popup-points-label, .ng-annotate-popup-points-field {
+  .ng-annotate-text-popup-points-label, .ng-annotate-text-popup-points-field {
     display: table-cell; }
-  .ng-annotate-popup-points-label {
+  .ng-annotate-text-popup-points-label {
     padding-right: 10px; }
-  .ng-annotate-popup-colors, .ng-annotate-popup-templates {
+  .ng-annotate-text-popup-colors, .ng-annotate-text-popup-templates {
     list-style: none;
     margin: 0;
     padding: 0; }
-  .ng-annotate-popup-colors li {
+  .ng-annotate-text-popup-colors li {
     float: left; }
-    .ng-annotate-popup-colors li + li {
+    .ng-annotate-text-popup-colors li + li {
       margin-left: 5px; }
-  .ng-annotate-popup-templates li + li {
+  .ng-annotate-text-popup-templates li + li {
     margin-top: 5px; }
-.ng-annotate-tooltip {
+.ng-annotate-text-tooltip {
   pointer-events: none;
   display: none;
   position: absolute;
@@ -138,50 +138,50 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font: 13px/1.38462 "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-shadow: 0 0 2px #000; }
-  .ng-annotate-tooltip-docked::after {
+  .ng-annotate-text-tooltip-docked::after {
     content: "";
     position: absolute;
     z-index: 1;
     border: 4px solid;
     border-color: rgba(0, 0, 0, 0.85) rgba(0, 0, 0, 0.85) transparent transparent;
     box-shadow: 4px -3px 8px rgba(0, 0, 0, 0.07); }
-  .ng-annotate-tooltip-docked-left::after, .ng-annotate-tooltip-docked-right::after {
+  .ng-annotate-text-tooltip-docked-left::after, .ng-annotate-text-tooltip-docked-right::after {
     top: 50%;
     margin-top: -4px; }
-  .ng-annotate-tooltip-docked-top::after, .ng-annotate-tooltip-docked-bottom::after {
+  .ng-annotate-text-tooltip-docked-top::after, .ng-annotate-text-tooltip-docked-bottom::after {
     left: 50%;
     margin-left: -4px; }
-  .ng-annotate-tooltip-docked-left::after {
+  .ng-annotate-text-tooltip-docked-left::after {
     -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
             transform: rotate(45deg);
     right: -4px; }
-  .ng-annotate-tooltip-docked-right::after {
+  .ng-annotate-text-tooltip-docked-right::after {
     -webkit-transform: rotate(-135deg);
         -ms-transform: rotate(-135deg);
             transform: rotate(-135deg);
     left: -4px; }
-  .ng-annotate-tooltip-docked-top::after {
+  .ng-annotate-text-tooltip-docked-top::after {
     -webkit-transform: rotate(135deg);
         -ms-transform: rotate(135deg);
             transform: rotate(135deg);
     bottom: -4px; }
-  .ng-annotate-tooltip-docked-bottom::after {
+  .ng-annotate-text-tooltip-docked-bottom::after {
     -webkit-transform: rotate(-45deg);
         -ms-transform: rotate(-45deg);
             transform: rotate(-45deg);
     top: -4px; }
-  .ng-annotate-tooltip-points {
+  .ng-annotate-text-tooltip-points {
     float: right; }
-  .ng-annotate-tooltip-points, .ng-annotate-tooltip-comment {
+  .ng-annotate-text-tooltip-points, .ng-annotate-text-tooltip-comment {
     padding-bottom: 1px; }
-  .ng-annotate-tooltip-points + .ng-annotate-tooltip-comment::before {
+  .ng-annotate-text-tooltip-points + .ng-annotate-text-tooltip-comment::before {
     content: "";
     float: right;
     width: 20px;
     height: 1.38462em;
     margin-bottom: 1px; }
-.ng-annotate-btn {
+.ng-annotate-text-btn {
   padding: 5px 10px;
   cursor: pointer;
   color: #444444;
@@ -192,20 +192,20 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
   font: inherit;
   text-shadow: 0 1px 1px #fff; }
-  .ng-annotate-btn:active {
+  .ng-annotate-text-btn:active {
     background-image: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.1));
     background-image: linear-gradient(to top, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.1));
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); }
-  .ng-annotate-btn-save, .ng-annotate-btn-delete {
+  .ng-annotate-text-btn-save, .ng-annotate-text-btn-delete {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3); }
-  .ng-annotate-btn-save {
+  .ng-annotate-text-btn-save {
     float: right;
     color: white;
     background-color: #1bb352; }
-  .ng-annotate-btn-delete {
+  .ng-annotate-text-btn-delete {
     color: white;
     background-color: #d94155; }
-.ng-annotate-swatch {
+.ng-annotate-text-swatch {
   -webkit-transition: border-color 0.15s;
           transition: border-color 0.15s;
   display: block;
@@ -215,21 +215,21 @@
   border: 1px solid rgba(0, 0, 0, 0.075);
   font: inherit;
   text-align: left; }
-  .ng-annotate-swatch:hover {
+  .ng-annotate-text-swatch:hover {
     border-color: rgba(0, 0, 0, 0.3); }
-  .ng-annotate-swatch-active {
+  .ng-annotate-text-swatch-active {
     border-color: rgba(0, 0, 0, 0.5); }
-  .ng-annotate-swatch-color {
+  .ng-annotate-text-swatch-color {
     width: 30px;
     height: 22.5px;
     overflow: hidden;
     padding: 0;
     text-indent: 9999px; }
-  .ng-annotate-swatch-template {
+  .ng-annotate-text-swatch-template {
     padding: 2.5px 5px; }
-    .ng-annotate-swatch-template-name {
+    .ng-annotate-text-swatch-template-name {
       float: left; }
-    .ng-annotate-swatch-template-points {
+    .ng-annotate-text-swatch-template-points {
       float: right; }
 
-/*# sourceMappingURL=ng-annotate-latest.css.map */
+/*# sourceMappingURL=ng-annotate-text-latest.css.map */

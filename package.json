@@ -1,16 +1,16 @@
 {
-  "name": "ng-annotate",
-  "version": "2.5.0-rc.4",
+  "name": "ng-annotate-text",
+  "version": "2.5.0-rc.5",
   "description": "An AngularJS directive to assist with annotation of text",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DigiExam/ng-annotate.git"
+    "url": "https://github.com/DigiExam/ng-annotate-text.git"
   },
   "author": "Rasmus Milesson",
   "bugs": {
-    "url": "https://github.com/DigiExam/ng-annotate/issues"
+    "url": "https://github.com/DigiExam/ng-annotate-text/issues"
   },
-  "homepage": "https://github.com/DigiExam/ng-annotate",
+  "homepage": "https://github.com/DigiExam/ng-annotate-text",
   "devDependencies": {
     "bower": "~1.3.8",
 		"gulp": "~3.8.6",
