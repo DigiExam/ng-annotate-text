@@ -1,12 +1,12 @@
 <!doctype html>
 <html ng-app="app">
 <head>
-	<title>ng-annotate demo</title>
+	<title>ng-annotate-text demo</title>
 	<meta charset="utf-8">
 
-	<!-- ng-annotate -->
-	<link href="lib/ng-annotate-latest.min.css" rel="stylesheet" />
-	<!--<link href="lib/ng-annotate-unstable.min.css" rel="stylesheet" />-->
+	<!-- ng-annotate-text -->
+	<link href="lib/ng-annotate-text-latest.min.css" rel="stylesheet" />
+	<!--<link href="lib/ng-annotate-text-unstable.min.css" rel="stylesheet" />-->
 
 	<!-- demo -->
 	<link href="dist/main.min.css" rel="stylesheet" />
@@ -17,16 +17,16 @@
 	<div class="container" ng-controller="MainController">
 
 		<div class="header">
-			<h1>ng-annotate demo</h1>
+			<h1>ng-annotate-text demo</h1>
 
 			<p>
 				This is a demo implementation of
-				<a href="https://github.com/DigiExam/ng-annotate/">ng-annotate</a>,
+				<a href="https://github.com/DigiExam/ng-annotate-text/">ng-annotate-text</a>,
 				an AngularJS directive for annotating text.
 			</p>
 
 			<p>
-				<a href="https://github.com/DigiExam/ng-annotate/tree/gh-pages">Here is the source code</a>
+				<a href="https://github.com/DigiExam/ng-annotate-text/tree/gh-pages">Here is the source code</a>
 				for this demo.
 			</p>
 
@@ -37,7 +37,7 @@
 			<div class="example-source">
 				<h2>Example</h2>
 
-				<ng-annotate
+				<ng-annotate-text
 					class="example-source-text"
 					readonly="false"
 					popup-controller="'AnnotationController'"
@@ -49,7 +49,7 @@
 					on-annotate-error="onAnnotateError"
 					on-popup-show="onPopupShow"
 					text="text">
-				</ng-annotate>
+				</ng-annotate-text>
 			</div>
 
 			<div class="example-summary">
@@ -75,9 +75,9 @@
 	<script src="lib/jquery.js"></script>
 	<script src="lib/angular.js"></script>
 
-	<!-- ng-annotate -->
-	<script src="lib/ng-annotate-latest.min.js"></script>
-	<!--<script src="lib/ng-annotate-unstable.min.js"></script>-->
+	<!-- ng-annotate-text -->
+	<script src="lib/ng-annotate-text-latest.min.js"></script>
+	<!--<script src="lib/ng-annotate-text-unstable.min.js"></script>-->
 
 	<!-- demo -->
 	<script src="dist/main.min.js"></script>

@@ -1,6 +1,6 @@
 {
-  "name": "ng-annotate-demo",
-  "homepage": "http://digiexam.github.io/ng-annotate",
+  "name": "ng-annotate-text-demo",
+  "homepage": "http://digiexam.github.io/ng-annotate-text",
   "authors": [
     "(Kenneth Sundqvist <kenneth.sundqvist@digiexam.se>)"
   ],
@@ -8,6 +8,6 @@
   "private": true,
   "devDependencies": {
     "jquery": "~1.10.2",
-    "ng-annotate": "DigiExam/ng-annotate#2.5.0-rc.4"
+    "ng-annotate-text": "DigiExam/ng-annotate-text#2.5.0-rc.6"
   }
 }

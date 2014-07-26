@@ -1,33 +1,33 @@
-<div class="ng-annotate-popup-group">
-	<label class="ng-annotate-popup-label" for="ng-annotate-edit-comment">Comment</label>
+<div class="ng-annotate-text-popup-group">
+	<label class="ng-annotate-text-popup-label" for="ng-annotate-text-edit-comment">Comment</label>
 	<textarea
-			id="ng-annotate-edit-comment"
-			class="ng-annotate-popup-field"
+			id="ng-annotate-text-edit-comment"
+			class="ng-annotate-text-popup-field"
 			ng-model="$annotation.data.comment"
 			ng-disabled="$readonly">
 	</textarea>
 </div>
 
-<div class="ng-annotate-popup-group ng-annotate-popup-points">
-	<label class="ng-annotate-popup-label ng-annotate-popup-points-label" for="ng-annotate-edit-points">Points</label>
+<div class="ng-annotate-text-popup-group ng-annotate-text-popup-points">
+	<label class="ng-annotate-text-popup-label ng-annotate-text-popup-points-label" for="ng-annotate-text-edit-points">Points</label>
 	<input
-			id="ng-annotate-edit-points"
+			id="ng-annotate-text-edit-points"
 			type="number"
-			class="ng-annotate-popup-field ng-annotate-popup-points-field"
+			class="ng-annotate-text-popup-field ng-annotate-text-popup-points-field"
 			ng-model="$annotation.data.points"
 			ng-disabled="$readonly" />
 </div>
 
-<div class="ng-annotate-popup-group" ng-if="!$readonly">
-	<div class="ng-annotate-popup-label">Color</div>
-	<ul class="ng-annotate-popup-colors">
+<div class="ng-annotate-text-popup-group" ng-if="!$readonly">
+	<div class="ng-annotate-text-popup-label">Color</div>
+	<ul class="ng-annotate-text-popup-colors">
 		<li ng-repeat="color in annotationColours">
 			<button
-					class="ng-annotate-swatch ng-annotate-swatch-color"
+					class="ng-annotate-text-swatch ng-annotate-text-swatch-color"
 					title="{{color.name}}"
 					ng-click="useColor(color)"
 					ng-class="[
-						'ng-annotate-type-' + color.value,
+						'ng-annotate-text-type-' + color.value,
 						 isActiveColor(color) ? 'active' : ''
 					]">
 				{{color.name}}
@@ -36,23 +36,23 @@
 	</ul>
 </div>
 
-<div class="ng-annotate-popup-group" ng-if="!$readonly">
-	<div class="ng-annotate-popup-label">Predefined</div>
-	<ul class="ng-annotate-popup-templates">
+<div class="ng-annotate-text-popup-group" ng-if="!$readonly">
+	<div class="ng-annotate-text-popup-label">Predefined</div>
+	<ul class="ng-annotate-text-popup-templates">
 		<li ng-repeat="template in templates">
 			<button
-					class="ng-annotate-swatch ng-annotate-swatch-template"
-					ng-class="'ng-annotate-type-' + template.type"
+					class="ng-annotate-text-swatch ng-annotate-text-swatch-template"
+					ng-class="'ng-annotate-text-type-' + template.type"
 					ng-click="useTemplate(template)">
-				<span class="ng-annotate-swatch-template-name">{{template.comment}}</span>
-				<span class="ng-annotate-swatch-template-points">{{template.points}}</span>
+				<span class="ng-annotate-text-swatch-template-name">{{template.comment}}</span>
+				<span class="ng-annotate-text-swatch-template-points">{{template.points}}</span>
 			</button>
 		</li>
 	</ul>
 </div>
 
-<div class="ng-annotate-popup-actions" ng-if="!$readonly">
-	<button class="ng-annotate-btn ng-annotate-btn-save" ng-click="close()">Save</button>
-	<button class="ng-annotate-btn ng-annotate-btn-cancel" ng-click="reject()" ng-show="$isNew">Cancel</button>
-	<button class="ng-annotate-btn ng-annotate-btn-delete" ng-click="reject()" ng-show="!$isNew">Delete</button>
+<div class="ng-annotate-text-popup-actions" ng-if="!$readonly">
+	<button class="ng-annotate-text-btn ng-annotate-text-btn-save" ng-click="close()">Save</button>
+	<button class="ng-annotate-text-btn ng-annotate-text-btn-cancel" ng-click="reject()" ng-show="$isNew">Cancel</button>
+	<button class="ng-annotate-text-btn ng-annotate-text-btn-delete" ng-click="reject()" ng-show="!$isNew">Delete</button>
 </div>

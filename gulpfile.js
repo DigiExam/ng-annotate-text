@@ -9,7 +9,7 @@ var src = {
 	lib: [
 		"bower_components/angular/angular.js",
 		"bower_components/jquery/jquery.js",
-		"bower_components/ng-annotate/dist/*latest.min*"
+		"bower_components/ng-annotate-text/dist/*latest.min*"
 	],
 	livereload: ["dist/*", "lib/*"]
 };

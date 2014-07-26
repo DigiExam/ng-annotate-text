@@ -1,9 +1,9 @@
-<span class="ng-annotate-tooltip-points" ng-if="$annotation.data.points">
+<span class="ng-annotate-text-tooltip-points" ng-if="$annotation.data.points">
 	{{$annotation.data.points}}
 	<ng-pluralize
 			count="$annotation.data.points"
 			when="{'-1': 'point', '1': 'point', 'other': 'points'}"></ng-pluralize>
 </span>
-<span class="ng-annotate-tooltip-comment" ng-if="$annotation.data.comment">
+<span class="ng-annotate-text-tooltip-comment" ng-if="$annotation.data.comment">
 	{{$annotation.data.comment}}
 </span>

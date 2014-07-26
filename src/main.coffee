@@ -1,4 +1,4 @@
-angular.module("app", ["ngAnnotate"])
+angular.module("app", ["ngAnnotateText"])
 
 	.controller "AnnotationController", ($scope, $timeout) ->
 		$scope.annotationColours = [
@@ -68,7 +68,7 @@ angular.module("app", ["ngAnnotate"])
 			return
 
 		$scope.onAnnotateError = ($ex) ->
-			if $ex.message == "NG_ANNOTATE_PARTIAL_NODE_SELECTED"
+			if $ex.message == "NG_ANNOTATE_TEXT_PARTIAL_NODE_SELECTED"
 				alert "Invalid selection."
 			else
 				throw $ex
