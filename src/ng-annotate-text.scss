@@ -298,6 +298,7 @@ $type-colors: (
 
 	&-swatch {
 		transition: border-color 0.15s;
+		position: relative;
 		display: block;
 		width: 100%;
 		cursor: pointer;
@@ -310,14 +311,20 @@ $type-colors: (
 			border-color: hsla(0, 0%, 0%, 0.3);
 		}
 
-		&-active {
-			border-color: hsla(0, 0%, 0%, 0.5);
+		&-active::before {
+			content: "";
+			position: absolute;
+			top: -3px;
+			bottom: -3px;
+			left: -3px;
+			right: -3px;
+			border: 1px solid hsla(0, 0%, 0%, 0.3);
+			border-radius: 4px;
 		}
 
 		&-color {
 			width: $swatch-color-width;
 			height: $swatch-color-height;
-			overflow: hidden;
 			padding: 0;
 			text-indent: 9999px;
 		}

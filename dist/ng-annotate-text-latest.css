@@ -208,6 +208,7 @@
 .ng-annotate-text-swatch {
   -webkit-transition: border-color 0.15s;
           transition: border-color 0.15s;
+  position: relative;
   display: block;
   width: 100%;
   cursor: pointer;
@@ -217,12 +218,18 @@
   text-align: left; }
   .ng-annotate-text-swatch:hover {
     border-color: rgba(0, 0, 0, 0.3); }
-  .ng-annotate-text-swatch-active {
-    border-color: rgba(0, 0, 0, 0.5); }
+  .ng-annotate-text-swatch-active::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: -3px;
+    right: -3px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px; }
   .ng-annotate-text-swatch-color {
     width: 30px;
     height: 22.5px;
-    overflow: hidden;
     padding: 0;
     text-indent: 9999px; }
   .ng-annotate-text-swatch-template {
