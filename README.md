@@ -12,7 +12,19 @@ ng-annotate-text is a library to annotate texts in AngularJS.
 
 Attribute | Default value | Description
 --- | --- | ---
-popup-offset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels.
+text |   | The text to be annotated
+annotations |  | Annotations to load
+readonly | false | No new annotations can be made and existing annotations can't be edited
+popup-controller |  | Controller to apply to the popup
+popup-template-url |  | Url to the popup template
+tooltip-controller |  | Controller to apply to the tooltip
+tooltip-template-url |  | Url to the tooltip template
+on-annotate |  | Function called when an annotation is saved, with the annotation passed as the first attribute
+on-annotate-delete |  | Function called when an annotation is deleted, with the annotation passed as the first attribute
+on-annotate-error |  | Function called when an error is caught, with the error passed as the first attribute
+on-popup-show |  | Function called when the popup is shown
+on-popup-hide |  | Function called when the popup is hidden 
+popup-offset | 10 | Position the popup editor away form its annotation and the window edges by this many pixels
 
 ## Event listeners
 
