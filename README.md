@@ -20,6 +20,13 @@ Event | Description
 --- | ---
 ngAnnotateText.clearPopups | Clears any open popup or tooltip
 
+## Errors passed to the annotation error callback
+
+Error | Description
+--- | ---
+NG_ANNOTATE_TEXT_NO_TEXT_SELECTED | The user clicked the text but no text were selected
+NG_ANNOTATE_TEXT_PARTIAL_NODE_SELECTED | The selection did not start and end in the same element
+
 ## Getting started with development
 
 1. Install NodeJS ([nodejs.org](http://nodejs.org/))
