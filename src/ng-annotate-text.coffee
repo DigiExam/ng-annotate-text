@@ -1,5 +1,7 @@
 ngAnnotateText = angular.module "ngAnnotateText", []
 
+annotationIdCounter = 0
+
 insertAt = (text, index, string)->
 	return text.substr(0, index) + string + text.substr(index)
 
@@ -161,7 +163,7 @@ ngAnnotateText.factory "NGAnnotation", ->
 	Annotation = (data)->
 
 		angular.extend @,
-			id: new Date().getTime(),
+			id: annotationIdCounter++,
 			startIndex: null
 			endIndex: null
 			data: {points: 0}

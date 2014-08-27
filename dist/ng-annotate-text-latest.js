@@ -1,7 +1,9 @@
 (function() {
-  var getAnnotationById, insertAt, ngAnnotateText, parseAnnotations, sortAnnotationsByEndIndex;
+  var annotationIdCounter, getAnnotationById, insertAt, ngAnnotateText, parseAnnotations, sortAnnotationsByEndIndex;
 
   ngAnnotateText = angular.module("ngAnnotateText", []);
+
+  annotationIdCounter = 0;
 
   insertAt = function(text, index, string) {
     return text.substr(0, index) + string + text.substr(index);
@@ -214,7 +216,7 @@
     var Annotation;
     Annotation = function(data) {
       angular.extend(this, {
-        id: new Date().getTime(),
+        id: annotationIdCounter++,
         startIndex: null,
         endIndex: null,
         data: {
