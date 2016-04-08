@@ -36,8 +36,8 @@ getAnnotationById = (annotations, aId)->
 				return an
 
 
-isEmptyObject: (obj) =>
-    for prop in obj
+isEmptyObject = (obj) ->
+    for prop of obj
         if Object.prototype.hasOwnProperty.call(obj, prop)
             return false;
     return true;
@@ -384,7 +384,7 @@ ngAnnotateText.directive "ngAnnotateText", ($rootScope, $compile, $http, $q, $co
 
 			# We don't want to show the tooltip if a popup with the annotation is open,
 			# or if the tooltip has both no comment and points
-			if activePopup? or isEmptyObject(annotation)
+			if activePopup? or isEmptyObject(annotation.data)
 				return
 
 			tooltip = new NGAnnotateTextPopup
