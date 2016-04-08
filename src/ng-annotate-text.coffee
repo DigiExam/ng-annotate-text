@@ -35,6 +35,13 @@ getAnnotationById = (annotations, aId)->
 			if an isnt undefined
 				return an
 
+
+isEmptyObject: (obj) =>
+    for prop in obj
+        if Object.prototype.hasOwnProperty.call(obj, prop)
+            return false;
+    return true;
+
 ngAnnotateText.factory "NGAnnotateTextPopup", ->
 	(args) ->
 		args = angular.extend {
@@ -158,7 +165,7 @@ ngAnnotateText.factory "NGAnnotateTextPopup", ->
 				size = {x: 'width', y: 'height'}[axis]
 				centerPos = pos.scroll[start] + pos.anchor[start] + (pos.anchor[size] / 2) - (pos.target[size] / 2)
 				Math.max(pos.scroll[start] + @offset, Math.min(centerPos, pos.scroll[start] + pos.viewport[size] - pos.target[size] - @offset))
-
+                
 ngAnnotateText.factory "NGAnnotation", ->
 	Annotation = (data)->
 
@@ -166,7 +173,7 @@ ngAnnotateText.factory "NGAnnotation", ->
 			id: annotationIdCounter++,
 			startIndex: null
 			endIndex: null
-			data: {points: 0}
+			data: {}
 			type: ""
 			children: []
 
@@ -377,7 +384,7 @@ ngAnnotateText.directive "ngAnnotateText", ($rootScope, $compile, $http, $q, $co
 
 			# We don't want to show the tooltip if a popup with the annotation is open,
 			# or if the tooltip has both no comment and points
-			if activePopup? or (not annotation.data.comment and not annotation.data.points)
+			if activePopup? or isEmptyObject(annotation)
 				return
 
 			tooltip = new NGAnnotateTextPopup
