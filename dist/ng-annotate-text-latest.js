@@ -1,5 +1,5 @@
 (function() {
-  var annotationIdCounter, getAnnotationById, insertAt, ngAnnotateText, parseAnnotations, sortAnnotationsByEndIndex;
+  var annotationIdCounter, getAnnotationById, insertAt, isEmptyObject, ngAnnotateText, parseAnnotations, sortAnnotationsByEndIndex;
 
   ngAnnotateText = angular.module("ngAnnotateText", []);
 
@@ -57,6 +57,16 @@
         }
       }
     }
+  };
+
+  isEmptyObject = function(obj) {
+    var prop;
+    for (prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        return false;
+      }
+    }
+    return true;
   };
 
   ngAnnotateText.factory("NGAnnotateTextPopup", function() {
@@ -219,9 +229,7 @@
         id: annotationIdCounter++,
         startIndex: null,
         endIndex: null,
-        data: {
-          points: 0
-        },
+        data: {},
         type: "",
         children: []
       });
@@ -444,7 +452,7 @@
             return;
           }
           annotation = getAnnotationById($scope.annotations, targetId);
-          if ((activePopup != null) || (!annotation.data.comment && !annotation.data.points)) {
+          if ((activePopup != null) || isEmptyObject(annotation.data)) {
             return;
           }
           tooltip = new NGAnnotateTextPopup({
